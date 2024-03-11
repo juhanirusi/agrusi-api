@@ -22,8 +22,8 @@ public class Account {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "is_verified")
-    private boolean isVerified;
+//    @Column(name = "is_verified")
+//    private boolean isVerified;
 
     @CreationTimestamp
     @Column(name = "date_created", updatable = false)
@@ -37,12 +37,12 @@ public class Account {
     }
 
     public Account(
-            String email, String password, boolean isVerified,
+            String email, String password,
             LocalDateTime dateCreated, LocalDateTime lastUpdated
     ) {
         this.email = email;
         this.password = password;
-        this.isVerified = isVerified;
+        //this.isVerified = isVerified;
         this.dateCreated = dateCreated;
         this.lastUpdated = lastUpdated;
     }
@@ -59,7 +59,7 @@ public class Account {
     * an important field.
     */
 
-    protected void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -79,13 +79,13 @@ public class Account {
         this.password = password;
     }
 
-    public boolean isVerified() {
-        return isVerified;
-    }
-
-    public void setVerified(boolean verified) {
-        isVerified = verified;
-    }
+//    public boolean isVerified() {
+//        return isVerified;
+//    }
+//
+//    public void setVerified(boolean verified) {
+//        isVerified = verified;
+//    }
 
     public LocalDateTime getDateCreated() {
         return dateCreated;
