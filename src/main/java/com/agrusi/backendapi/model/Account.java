@@ -2,6 +2,7 @@ package com.agrusi.backendapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,6 +16,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.AUTO) // Change to UUID?
     private Long id;
 
+    @Email
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
@@ -22,8 +24,8 @@ public class Account {
     @Column(name = "password", nullable = false)
     private String password;
 
-//    @Column(name = "is_verified")
-//    private boolean isVerified;
+    @Column(name = "is_verified", nullable = false)
+    private boolean isVerified = false;
 
     @CreationTimestamp
     @Column(name = "date_created", updatable = false)
@@ -37,12 +39,12 @@ public class Account {
     }
 
     public Account(
-            String email, String password,
+            String email, String password, boolean isVerified,
             LocalDateTime dateCreated, LocalDateTime lastUpdated
     ) {
         this.email = email;
         this.password = password;
-        //this.isVerified = isVerified;
+        this.isVerified = isVerified;
         this.dateCreated = dateCreated;
         this.lastUpdated = lastUpdated;
     }
@@ -59,7 +61,7 @@ public class Account {
     * an important field.
     */
 
-    public void setId(Long id) {
+    protected void setId(Long id) {
         this.id = id;
     }
 
@@ -79,13 +81,13 @@ public class Account {
         this.password = password;
     }
 
-//    public boolean isVerified() {
-//        return isVerified;
-//    }
-//
-//    public void setVerified(boolean verified) {
-//        isVerified = verified;
-//    }
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
 
     public LocalDateTime getDateCreated() {
         return dateCreated;
