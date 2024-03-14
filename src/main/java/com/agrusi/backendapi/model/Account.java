@@ -7,14 +7,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity(name = "account")
 @Table(name = "account")
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) // Change to UUID?
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Email
     @Column(name = "email", nullable = false, unique = true)
@@ -49,7 +50,7 @@ public class Account {
         this.lastUpdated = lastUpdated;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -61,7 +62,7 @@ public class Account {
     * an important field.
     */
 
-    protected void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
