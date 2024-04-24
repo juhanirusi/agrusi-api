@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "account")
@@ -14,7 +15,8 @@ import java.util.UUID;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
+    @Column(name = "account_id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
     @Column(name = "first_name", nullable = false)
@@ -31,6 +33,14 @@ public class Account {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "account_link_role",
+            joinColumns = { @JoinColumn(name = "fk_account_id") },
+            inverseJoinColumns = { @JoinColumn(name = "fk_role_id") }
+    )
+    private Set<Role> authorities;
+
     @Column(name = "is_verified", nullable = false)
     private boolean isVerified = false;
 
@@ -46,15 +56,22 @@ public class Account {
     }
 
     public Account(
-            String firstName, String lastName,
-            String email, String password,
-            boolean isVerified, LocalDateTime dateCreated,
+            UUID id,
+            String firstName,
+            String lastName,
+            String email,
+            String password,
+            Set<Role> authorities,
+            boolean isVerified,
+            LocalDateTime dateCreated,
             LocalDateTime lastUpdated
     ) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.authorities = authorities;
         this.isVerified = isVerified;
         this.dateCreated = dateCreated;
         this.lastUpdated = lastUpdated;
@@ -106,6 +123,14 @@ public class Account {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Role> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<Role> authorities) {
+        this.authorities = authorities;
     }
 
     public boolean isVerified() {
