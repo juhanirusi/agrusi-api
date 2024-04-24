@@ -2,5 +2,15 @@ package com.agrusi.backendapi.repository;
 
 import com.agrusi.backendapi.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface AccountRepository extends JpaRepository<Account, Long> { }
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public interface AccountRepository extends JpaRepository<Account, UUID> {
+
+    Optional<Account> findAccountByEmail(String email);
+
+    Boolean existsByEmail(String email);
+}
