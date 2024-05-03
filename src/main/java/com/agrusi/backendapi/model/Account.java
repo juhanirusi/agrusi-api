@@ -3,6 +3,7 @@ package com.agrusi.backendapi.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,13 +17,23 @@ public class Account {
 
     @Id
     @GeneratedValue
-    @Column(name = "account_id", updatable = false, nullable = false, unique = true)
+    @Column(updatable = false, nullable = false, unique = true)
     private UUID id;
 
     @Column(name = "first_name", nullable = false)
+    @Size(
+            min = 2,
+            max = 255,
+            message = "First name is required, maximum 255 characters."
+    )
     private String firstName;
 
     @Column(name = "last_name", nullable = false)
+    @Size(
+            min = 2,
+            max = 255,
+            message = "Last name is required, maximum 255 characters."
+    )
     private String lastName;
 
     @Email
@@ -36,8 +47,8 @@ public class Account {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "account_link_role",
-            joinColumns = { @JoinColumn(name = "fk_account_id") },
-            inverseJoinColumns = { @JoinColumn(name = "fk_role_id") }
+            joinColumns = { @JoinColumn(name = "fk_account_id", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "fk_role_id", referencedColumnName = "id") }
     )
     private Set<Role> authorities;
 
@@ -82,16 +93,12 @@ public class Account {
     }
 
     /*
-    * https://stackoverflow.com/questions/12369641/is-there-any-reason-to-not-generate-setters-and-getters-for-id-fields-in-jpa
-    *
-    * To setter method I give protected access. I just don't want any
-    * other pieces of code to have easy write access to such
-    * an important field.
+    * Primary key values never change, so you shouldn't allow the
+    * identifier property value to be modified. Hibernate and Spring
+    * Data JPA using Hibernate as a provider won’t update a primary
+    * key column, and you shouldn't expose a public identifier
+    * setter method on an entity!
     */
-
-    protected void setId(UUID id) {
-        this.id = id;
-    }
 
     public String getFirstName() {
         return firstName;
