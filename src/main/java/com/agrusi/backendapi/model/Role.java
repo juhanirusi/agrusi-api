@@ -3,14 +3,16 @@ package com.agrusi.backendapi.model;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Objects;
+
 @Entity(name = "role")
 @Table(name = "role")
 public class Role implements GrantedAuthority {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto-incremented database column
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "role_id", updatable = false, nullable = false, unique = true)
-    private Integer id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "authority")
@@ -23,26 +25,22 @@ public class Role implements GrantedAuthority {
         this.authority = authority;
     }
 
-    public Role(Integer id, EAccountRole authority) {
+    public Role(Long id, EAccountRole authority) {
         this.id = id;
         this.authority = authority;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
     /*
-     * https://stackoverflow.com/questions/12369641/is-there-any-reason-to-not-generate-setters-and-getters-for-id-fields-in-jpa
-     *
-     * To setter method I give protected access. I just don't want any
-     * other pieces of code to have easy write access to such
-     * an important field.
+     * Primary key values never change, so you shouldn't allow the
+     * identifier property value to be modified. Hibernate and Spring
+     * Data JPA using Hibernate as a provider won’t update a primary
+     * key column, and you shouldn't expose a public identifier
+     * setter method on an entity!
     */
-
-    protected void setId(Integer id) {
-        this.id = id;
-    }
 
     @Override
     public String getAuthority() {
@@ -51,5 +49,17 @@ public class Role implements GrantedAuthority {
 
     public void setAuthority(EAccountRole authority) {
         this.authority = authority;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Role role)) return false;
+        return Objects.equals(getId(), role.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }
