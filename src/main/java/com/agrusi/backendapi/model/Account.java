@@ -17,9 +17,12 @@ import java.util.UUID;
 public class Account {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(updatable = false, nullable = false, unique = true)
-    private UUID id;
+    private Long id;
+
+    @Column(name = "public_id", updatable = false, nullable = false, unique = true)
+    private UUID publicId;
 
     @Column(name = "first_name", nullable = false)
     @Size(
@@ -45,7 +48,7 @@ public class Account {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "account_link_role",
             joinColumns = { @JoinColumn(name = "fk_account_id", referencedColumnName = "id") },
@@ -64,11 +67,19 @@ public class Account {
     @Column(name = "last_updated", nullable = false)
     private LocalDateTime lastUpdated;
 
+    @PrePersist
+    public void prePersist() {
+
+        if (publicId == null) {
+            publicId = UUID.randomUUID();
+        }
+    }
+
     public Account() {
     }
 
     public Account(
-            UUID id,
+            Long id,
             String firstName,
             String lastName,
             String email,
@@ -89,7 +100,7 @@ public class Account {
         this.lastUpdated = lastUpdated;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
@@ -100,6 +111,10 @@ public class Account {
     * key column, and you shouldn't expose a public identifier
     * setter method on an entity!
     */
+
+    public UUID getPublicId() {
+        return publicId;
+    }
 
     public String getFirstName() {
         return firstName;
