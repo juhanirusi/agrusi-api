@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record RegisterAccountResponseDto (
-        UUID id,
+        UUID publicId,
         String email,
         String firstName,
         String lastName,
