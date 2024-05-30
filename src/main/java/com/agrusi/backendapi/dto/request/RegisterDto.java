@@ -3,11 +3,13 @@ package com.agrusi.backendapi.dto.request;
 
 import com.agrusi.backendapi.validator.annotation.ValidEmail;
 import com.agrusi.backendapi.validator.annotation.ValidPassword;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 public class RegisterDto {
 
+    @NotBlank(message = "First name is mandatory")
     @Size(
             min = 2,
             max = 255,
@@ -15,6 +17,7 @@ public class RegisterDto {
     )
     private String firstName;
 
+    @NotBlank(message = "Last name is mandatory")
     @Size(
             min = 2,
             max = 255,
@@ -22,10 +25,12 @@ public class RegisterDto {
     )
     private String lastName;
 
-    @ValidEmail
+    @NotBlank(message = "Email is mandatory")
     @NotEmpty(message = "Email can't be empty")
+    @ValidEmail
     private String email;
 
+    @NotBlank(message = "Password is mandatory")
     @ValidPassword
     private String password;
 
