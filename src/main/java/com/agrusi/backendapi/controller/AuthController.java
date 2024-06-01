@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
@@ -38,7 +38,7 @@ public class AuthController {
                     HttpStatus.CREATED,
                     "success",
                     "Account created successfully.",
-                    new HashMap<>() {{
+                    new LinkedHashMap<>() {{
                         put("id", createdAccount.publicId());
                         put("email", createdAccount.email());
                         put("firstName", createdAccount.firstName());
@@ -52,10 +52,8 @@ public class AuthController {
             return ResponseHandler.generateResponse(
                     HttpStatus.CONFLICT,
                     "error",
-                    null,
-                    Map.of(
-                            "message", exception.getMessage()
-                    )
+                    "Account creation failed",
+                    Map.of("message", exception.getMessage())
             );
         }
     }
@@ -67,15 +65,11 @@ public class AuthController {
 
         LoginResponseDto loggedInAccount = authService.login(loginDto);
 
-        /**
-         * REMEMBER TO DO ERROR HANDLING AS WELL !!!
-         */
-
         return ResponseHandler.generateResponse(
                 HttpStatus.OK,
                 "success",
                 "Login successful.",
-                new HashMap<>() {{
+                new LinkedHashMap<>() {{
                     put("email", loggedInAccount.email());
                     put("accessToken", loggedInAccount.token());
                 }}
