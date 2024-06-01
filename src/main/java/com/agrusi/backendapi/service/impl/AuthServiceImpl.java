@@ -32,7 +32,11 @@ public class AuthServiceImpl implements AuthService {
     private final TokenService tokenService;
     private final AccountMapper accountMapper;
 
-    public AuthServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, TokenService tokenService, AccountMapper accountMapper) {
+    public AuthServiceImpl(
+            AccountRepository accountRepository, RoleRepository roleRepository,
+            AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder,
+            TokenService tokenService, AccountMapper accountMapper
+    ) {
         this.accountRepository = accountRepository;
         this.roleRepository = roleRepository;
         this.authenticationManager = authenticationManager;
@@ -51,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Account newAccount = new Account();
+
         Role userRole = roleRepository.findByAuthority(EAccountRole.USER)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
@@ -78,7 +83,6 @@ public class AuthServiceImpl implements AuthService {
 
 //        AuthUserDetails userDetails = (AuthUserDetails) authentication.getPrincipal();
 
-        //return new LoginResponseDto(loginDto.getEmail(), token);
         return new LoginResponseDto(loginDto.getEmail(), token);
     }
 }
