@@ -39,7 +39,7 @@ public class AuthController {
                     "success",
                     "Account created successfully.",
                     new LinkedHashMap<>() {{
-                        put("id", createdAccount.publicId());
+                        put("publicId", createdAccount.publicId());
                         put("email", createdAccount.email());
                         put("firstName", createdAccount.firstName());
                         put("lastName", createdAccount.lastName());
