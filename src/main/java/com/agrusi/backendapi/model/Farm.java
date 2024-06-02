@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity(name = "farm")
 @Table(name = "farm")
@@ -14,6 +15,9 @@ public class Farm {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(updatable = false, nullable = false, unique = true)
     private Long id;
+
+    @Column(name = "public_id", updatable = false, nullable = false, unique = true)
+    private UUID publicId;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -26,11 +30,23 @@ public class Farm {
     @Column(name = "last_updated", nullable = false)
     private LocalDateTime lastUpdated;
 
+    @PrePersist
+    public void prePersist() {
+
+        if (publicId == null) {
+            publicId = UUID.randomUUID();
+        }
+    }
+
     public Farm() {
     }
 
-    public Farm(Long id, String name, LocalDateTime dateCreated, LocalDateTime lastUpdated) {
+    public Farm(
+            Long id, UUID publicId, String name,
+            LocalDateTime dateCreated, LocalDateTime lastUpdated
+    ) {
         this.id = id;
+        this.publicId = publicId;
         this.name = name;
         this.dateCreated = dateCreated;
         this.lastUpdated = lastUpdated;
@@ -47,6 +63,10 @@ public class Farm {
      * key column, and you shouldn't expose a public identifier
      * setter method on an entity!
     */
+
+    public UUID getPublicId() {
+        return publicId;
+    }
 
     public String getName() {
         return name;
