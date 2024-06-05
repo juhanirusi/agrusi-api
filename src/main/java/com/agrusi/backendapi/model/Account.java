@@ -8,9 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity(name = "account")
 @Table(name = "account")
@@ -47,6 +45,12 @@ public class Account {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(
+            mappedBy = "account", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true
+    )
+    private List<UserAddress> addresses = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -146,6 +150,14 @@ public class Account {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<UserAddress> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<UserAddress> addresses) {
+        this.addresses = addresses;
     }
 
     public Set<Role> getAuthorities() {
