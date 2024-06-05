@@ -50,8 +50,11 @@ public class Farm {
     }
 
     public Farm(
-            Long id, UUID publicId, String name,
-            LocalDateTime dateCreated, LocalDateTime lastUpdated
+            Long id,
+            UUID publicId,
+            String name,
+            LocalDateTime dateCreated,
+            LocalDateTime lastUpdated
     ) {
         this.id = id;
         this.publicId = publicId;
