@@ -5,6 +5,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "farm")
@@ -21,6 +23,12 @@ public class Farm {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @OneToMany(
+            mappedBy = "farm", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true
+    )
+    private Set<Field> fields = new HashSet<>();
 
     @CreationTimestamp
     @Column(name = "date_created", updatable = false)
@@ -74,6 +82,14 @@ public class Farm {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Field> getFields() {
+        return fields;
+    }
+
+    public void setFields(Set<Field> fields) {
+        this.fields = fields;
     }
 
     public LocalDateTime getDateCreated() {
