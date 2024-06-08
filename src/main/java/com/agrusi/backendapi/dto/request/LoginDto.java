@@ -1,7 +1,10 @@
 package com.agrusi.backendapi.dto.request;
 
+import com.agrusi.backendapi.validator.annotation.ValidEmail;
+
 public class LoginDto {
 
+    @ValidEmail
     private String email;
 
     private String password;
