@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
+import java.math.BigDecimal;
+
 @Entity(name = "field")
 @Table(name = "field")
 public class Field {
@@ -19,24 +21,33 @@ public class Field {
     @Column(name = "area", columnDefinition = "geometry(Polygon, 4326)", nullable = false)
     private Polygon area;
 
-    @Column(name = "center", columnDefinition = "geometry(Point, 4326)")
+    @Column(name = "center", columnDefinition = "geometry(Point, 4326)", nullable = false)
     private Point center;
 
-    @Column(name = "field_size")
-    private Double fieldSize;
+    @Column(name = "size")
+    private BigDecimal size;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_farm_id")
+    private Farm farm;
 
     public Field() {
     }
 
     public Field(
-            Long id, String name, Polygon area,
-            Point center, Double fieldSize
+            Long id,
+            String name,
+            Polygon area,
+            Point center,
+            BigDecimal size,
+            Farm farm
     ) {
         this.id = id;
         this.name = name;
         this.area = area;
         this.center = center;
-        this.fieldSize = fieldSize;
+        this.size = size;
+        this.farm = farm;
     }
 
     public Long getId() {
@@ -75,11 +86,19 @@ public class Field {
         this.center = center;
     }
 
-    public Double getFieldSize() {
-        return fieldSize;
+    public BigDecimal getSize() {
+        return size;
     }
 
-    public void setFieldSize(Double fieldSize) {
-        this.fieldSize = fieldSize;
+    public void setSize(BigDecimal size) {
+        this.size = size;
+    }
+
+    public Farm getFarm() {
+        return farm;
+    }
+
+    public void setFarm(Farm farm) {
+        this.farm = farm;
     }
 }
