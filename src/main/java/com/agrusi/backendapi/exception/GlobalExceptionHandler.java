@@ -76,7 +76,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         List<Map<String, String>> errors = new ArrayList<>();
         Map<String, String> error = new HashMap<>();
-        error.put("message", exception.getMessage());
+        error.put("message", "The request body is not readable, is empty or contains invalid data.");
         errors.add(error);
 
         ApiError apiError = new ApiError(
