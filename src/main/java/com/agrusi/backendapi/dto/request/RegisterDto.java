@@ -31,6 +31,7 @@ public class RegisterDto {
     private String email;
 
     @NotBlank(message = "Password is mandatory")
+    @NotEmpty(message = "Password can't be empty")
     @ValidPassword
     private String password;
 
