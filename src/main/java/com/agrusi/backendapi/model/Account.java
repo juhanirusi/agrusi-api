@@ -15,7 +15,12 @@ import java.util.*;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_sequence")
+    @SequenceGenerator(
+            name = "account_sequence",
+            sequenceName = "account_sequence",
+            allocationSize = 1
+    )
     @Column(updatable = false, nullable = false, unique = true)
     private Long id;
 
