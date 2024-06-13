@@ -14,7 +14,12 @@ import java.util.UUID;
 public class Farm {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "farm_sequence")
+    @SequenceGenerator(
+            name = "farm_sequence",
+            sequenceName = "farm_sequence",
+            allocationSize = 1
+    )
     @Column(updatable = false, nullable = false, unique = true)
     private Long id;
 
