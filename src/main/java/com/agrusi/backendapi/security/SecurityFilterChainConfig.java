@@ -1,5 +1,6 @@
 package com.agrusi.backendapi.security;
 
+import com.agrusi.backendapi.security.service.JsonAuthenticationEntryPoint;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -38,7 +38,9 @@ public class SecurityFilterChainConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/auth/secured").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/v1/auth/user").hasRole("USER")
                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
-                .anyRequest().permitAll());
+//                .requestMatchers(HttpMethod.POST, "/api/v1/farm/**").hasRole("USER")
+                .anyRequest().permitAll()
+        );
 
         http.oauth2ResourceServer(
                 oauth2 -> oauth2.jwt(
@@ -47,7 +49,7 @@ public class SecurityFilterChainConfig {
         );
 
         http.exceptionHandling(exceptions -> exceptions
-                .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+                .authenticationEntryPoint(new JsonAuthenticationEntryPoint())
                 .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
         );
 
