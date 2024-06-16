@@ -44,7 +44,6 @@ public class AuthController {
                         put("firstName", createdAccount.firstName());
                         put("lastName", createdAccount.lastName());
                         put("accountVerified", createdAccount.accountVerified());
-                        put("dateCreated", createdAccount.dateCreated());
                     }}
             );
         } catch (AccountWithEmailAlreadyExistException exception) {
