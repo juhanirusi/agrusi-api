@@ -5,13 +5,19 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Entity(name = "field")
 @Table(name = "field")
 public class Field {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "field_sequence")
+    @SequenceGenerator(
+            name = "field_sequence",
+            sequenceName = "field_sequence",
+            allocationSize = 1
+    )
     @Column(updatable = false, nullable = false, unique = true)
     private Long id;
 
@@ -86,8 +92,15 @@ public class Field {
         this.center = center;
     }
 
+    /*
+    * CURRENTLY, WE WANT TO RETURN THE FIELD SIZE IN HECTARES, BECAUSE WE'RE
+    * OFFERING THIS SERVICE TO CUSTOMER'S IN EUROPE ONLY, BUT IF HAVING
+    * CUSTOMER'S FROM THE UNITED STATES OR COUNTRIES USING THE IMPERIAL
+    * SYSTEM, SOME FUNCTIONALITIES NEED TO BE RECODED.
+    */
+
     public BigDecimal getSize() {
-        return size;
+        return size.divide(BigDecimal.valueOf(10_000), 2, RoundingMode.HALF_UP);
     }
 
     public void setSize(BigDecimal size) {
@@ -100,5 +113,18 @@ public class Field {
 
     public void setFarm(Farm farm) {
         this.farm = farm;
+    }
+
+    /*
+    * Our area size converters that are means to convert the area saved in
+    * the "size" column from square meters into either hectares or acres.
+    */
+
+    public BigDecimal getAreaSizeInHectares() {
+        return size.divide(BigDecimal.valueOf(10_000), 2, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal getAreaSizeInAcres() {
+        return size.divide(BigDecimal.valueOf(4_046.85642), 2, RoundingMode.HALF_UP);
     }
 }
