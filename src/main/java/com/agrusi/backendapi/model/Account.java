@@ -63,7 +63,7 @@ public class Account {
             joinColumns = { @JoinColumn(name = "fk_account_id", referencedColumnName = "id") },
             inverseJoinColumns = { @JoinColumn(name = "fk_role_id", referencedColumnName = "id") }
     )
-    private Set<Role> authorities;
+    private Set<Role> authorities = new HashSet<>();
 
     @Column(name = "is_verified", nullable = false)
     private boolean isVerified = false;
