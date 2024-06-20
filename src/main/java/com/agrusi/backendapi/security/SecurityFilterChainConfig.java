@@ -38,7 +38,7 @@ public class SecurityFilterChainConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/auth/secured").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/v1/auth/user").hasRole("USER")
                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
-//                .requestMatchers(HttpMethod.POST, "/api/v1/farm/**").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/api/v1/farm/**").hasRole("USER")
                 .anyRequest().permitAll()
         );
 
@@ -68,11 +68,10 @@ public class SecurityFilterChainConfig {
     public ApplicationListener<AuthenticationSuccessEvent> successListener() {
 
         return event -> {
-            System.out.println(String.format(
-                    "SUCCESS [%s] %s",
+            System.out.printf(
+                    "SUCCESS [%s] %s%n",
                     event.getAuthentication().getClass().getName(),
-                    event.getAuthentication().getName())
-            );
+                    event.getAuthentication().getName());
         };
     }
 }
