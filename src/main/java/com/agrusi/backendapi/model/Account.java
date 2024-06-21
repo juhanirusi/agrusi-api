@@ -51,6 +51,8 @@ public class Account {
     @Column(name = "password", nullable = false)
     private String password;
 
+    // mappedBy = "account", because "Account" is the owning entity !!!
+
     @OneToMany(
             mappedBy = "account", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true

@@ -29,6 +29,8 @@ public class Farm {
     @Column(name = "name", nullable = false)
     private String name;
 
+    // mappedBy = "farm", because "Farm" is the owning entity !!!
+
     @OneToMany(
             mappedBy = "farm", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true
