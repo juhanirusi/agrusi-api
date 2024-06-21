@@ -43,14 +43,14 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(
             HttpSecurity http,
-            EmailPasswordAuthProvider authProvider,
+            EmailPasswordAuthProvider emailPasswordAuthProvider,
             UserDetailsService userDetailsService
     ) throws Exception {
 
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
-        authenticationManagerBuilder.authenticationProvider(authProvider);
+        authenticationManagerBuilder.authenticationProvider(emailPasswordAuthProvider);
         authenticationManagerBuilder.userDetailsService(userDetailsService);
 
         return authenticationManagerBuilder.build();
