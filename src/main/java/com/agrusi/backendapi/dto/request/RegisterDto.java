@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 
 public class RegisterDto {
 
-    @NotBlank(message = "First name is mandatory")
+    @NotBlank(message = "First name is mandatory.")
     @Size(
             min = 2,
             max = 255,
@@ -17,7 +17,7 @@ public class RegisterDto {
     )
     private String firstName;
 
-    @NotBlank(message = "Last name is mandatory")
+    @NotBlank(message = "Last name is mandatory.")
     @Size(
             min = 2,
             max = 255,
@@ -25,13 +25,13 @@ public class RegisterDto {
     )
     private String lastName;
 
-    @NotBlank(message = "Email is mandatory")
-    @NotEmpty(message = "Email can't be empty")
+    @NotBlank(message = "Email is mandatory.")
+    @NotEmpty(message = "Email can't be empty.")
     @ValidEmail
     private String email;
 
-    @NotBlank(message = "Password is mandatory")
-    @NotEmpty(message = "Password can't be empty")
+    @NotBlank(message = "Password is mandatory.")
+    @NotEmpty(message = "Password can't be empty.")
     @ValidPassword
     private String password;
 
