@@ -1,0 +1,13 @@
+# Links To Java / Spring Resources...
+
+A collection of resources for Spring and Java...
+
+
+## Updating Resources...
+
+1. https://kdrozd.pl/how-to-perform-a-partial-update-patch-with-explicit-null/
+
+
+## Others...
+
+1. https://kdrozd.pl/custom-annotation-processor/
