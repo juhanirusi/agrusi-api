@@ -24,6 +24,7 @@
 		<passay.version>1.6.4</passay.version>
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 		<spring-boot-maven.version>3.2.3</spring-boot-maven.version>
+		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 		<hibernate.version>6.5.2.Final</hibernate.version>
 		<jts.version>1.19.0</jts.version>
 
@@ -153,6 +154,14 @@
 			<version>${mapstruct.version}</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor -->
+
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct-processor</artifactId>
+			<version>${mapstruct.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>
@@ -193,15 +202,23 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
+
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<parameters>true</parameters>
+
 					<annotationProcessorPaths>
+
 						<path>
 							<groupId>org.mapstruct</groupId>
 							<artifactId>mapstruct-processor</artifactId>
 							<version>${mapstruct.version}</version>
 						</path>
+
 					</annotationProcessorPaths>
+
 				</configuration>
 			</plugin>
 
