@@ -1,4 +1,4 @@
-package com.agrusi.backendapi.dto.request;
+package com.agrusi.backendapi.dto.request.auth;
 
 
 import com.agrusi.backendapi.validator.annotation.ValidEmail;
@@ -13,7 +13,8 @@ public class RegisterDto {
     @Size(
             min = 2,
             max = 255,
-            message = "First name is required, maximum 255 characters."
+            message = "First name is required and needs to be " +
+                    "between {min} and {max} characters long."
     )
     private String firstName;
 
@@ -21,7 +22,8 @@ public class RegisterDto {
     @Size(
             min = 2,
             max = 255,
-            message = "Last name is required, maximum 255 characters."
+            message = "Last name is required and needs to be " +
+                    "between {min} and {max} characters long."
     )
     private String lastName;
 
