@@ -1,4 +1,4 @@
-package com.agrusi.backendapi.model;
+package com.agrusi.backendapi.enums;
 
 public enum EAccountRole {
     USER,

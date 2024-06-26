@@ -1,6 +1,6 @@
 package com.agrusi.backendapi.repository;
 
-import com.agrusi.backendapi.model.EAccountRole;
+import com.agrusi.backendapi.enums.EAccountRole;
 import com.agrusi.backendapi.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
