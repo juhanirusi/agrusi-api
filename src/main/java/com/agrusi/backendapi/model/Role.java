@@ -1,5 +1,6 @@
 package com.agrusi.backendapi.model;
 
+import com.agrusi.backendapi.enums.EAccountRole;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
