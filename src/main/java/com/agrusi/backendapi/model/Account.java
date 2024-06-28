@@ -27,20 +27,20 @@ public class Account {
     @Column(name = "public_id", updatable = false, nullable = false, unique = true)
     private UUID publicId;
 
-    @Column(name = "first_name", nullable = false)
     @Size(
             min = 2,
             max = 255,
             message = "First name is required, maximum 255 characters."
     )
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false)
     @Size(
             min = 2,
             max = 255,
             message = "Last name is required, maximum 255 characters."
     )
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @Email
@@ -79,7 +79,7 @@ public class Account {
     private LocalDateTime lastUpdated;
 
     @PrePersist
-    public void prePersist() {
+    public void createPublicId() {
 
         if (publicId == null) {
             publicId = UUID.randomUUID();
