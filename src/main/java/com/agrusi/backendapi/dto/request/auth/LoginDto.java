@@ -1,4 +1,4 @@
-package com.agrusi.backendapi.dto.request;
+package com.agrusi.backendapi.dto.request.auth;
 
 import com.agrusi.backendapi.validator.annotation.ValidEmail;
 
