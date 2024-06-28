@@ -33,7 +33,7 @@ public class Field {
     @Column(name = "size")
     private BigDecimal size;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_farm_id")
     private Farm farm;
 
@@ -100,7 +100,8 @@ public class Field {
     */
 
     public BigDecimal getSize() {
-        return size.divide(BigDecimal.valueOf(10_000), 2, RoundingMode.HALF_UP);
+//        return size.divide(BigDecimal.valueOf(10_000), 2, RoundingMode.HALF_UP);
+        return size;
     }
 
     public void setSize(BigDecimal size) {
