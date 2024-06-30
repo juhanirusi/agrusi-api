@@ -4,6 +4,8 @@
 
 2. Perhaps adding an "is_active" field to the "Account" entity?
 
+3. Implement exception handling for invalid URLs, for example, when a user requests something from a URL that doesn't exist.
+
 
 ## Entity design
 
