@@ -26,7 +26,7 @@ public class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         List<Map<String, String>> errors = new ArrayList<>();
         Map<String, String> error = new HashMap<>();
-        error.put("message", "Invalid credentials");
+        error.put("message", "Login failed. Invalid credentials.");
         errors.add(error);
 
         Map<String, Object> responseData = new LinkedHashMap<>();
