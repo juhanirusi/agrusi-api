@@ -68,7 +68,12 @@
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
 
-		<!-- TESTING START -->
+		<!--
+		TESTING START
+
+		Includes several testing libraries including
+		JUnit, Mockito, Hamcrest, and AssertJ.
+		-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
