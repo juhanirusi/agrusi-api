@@ -1,13 +1,13 @@
 package com.agrusi.backendapi.service;
 
-import com.agrusi.backendapi.dto.request.LoginDto;
-import com.agrusi.backendapi.dto.request.RegisterDto;
-import com.agrusi.backendapi.dto.response.LoginResponseDto;
-import com.agrusi.backendapi.dto.response.RegisterAccountResponseDto;
+import com.agrusi.backendapi.dto.request.auth.LoginDto;
+import com.agrusi.backendapi.dto.request.auth.RegisterDto;
+import com.agrusi.backendapi.dto.response.auth.AccountRegistrationResponseDto;
+import com.agrusi.backendapi.dto.response.auth.LoginResponseDto;
 
 public interface AuthService {
 
-    RegisterAccountResponseDto registerNewAccount(RegisterDto registerDto);
+    AccountRegistrationResponseDto registerNewAccount(RegisterDto registerDto);
 
     LoginResponseDto login(LoginDto loginDto);
 }
