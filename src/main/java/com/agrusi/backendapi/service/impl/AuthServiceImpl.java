@@ -1,13 +1,13 @@
 package com.agrusi.backendapi.service.impl;
 
-import com.agrusi.backendapi.dto.request.LoginDto;
-import com.agrusi.backendapi.dto.request.RegisterDto;
-import com.agrusi.backendapi.dto.response.LoginResponseDto;
-import com.agrusi.backendapi.dto.response.RegisterAccountResponseDto;
+import com.agrusi.backendapi.dto.request.auth.LoginDto;
+import com.agrusi.backendapi.dto.request.auth.RegisterDto;
+import com.agrusi.backendapi.dto.response.auth.AccountRegistrationResponseDto;
+import com.agrusi.backendapi.dto.response.auth.LoginResponseDto;
+import com.agrusi.backendapi.enums.EAccountRole;
 import com.agrusi.backendapi.exception.auth.AccountWithEmailAlreadyExistException;
 import com.agrusi.backendapi.mapper.AccountMapper;
 import com.agrusi.backendapi.model.Account;
-import com.agrusi.backendapi.model.EAccountRole;
 import com.agrusi.backendapi.model.Role;
 import com.agrusi.backendapi.repository.AccountRepository;
 import com.agrusi.backendapi.repository.RoleRepository;
@@ -18,11 +18,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
 @Service
-//@Transactional ???
+@Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
 
     private final AccountRepository accountRepository;
@@ -33,9 +34,12 @@ public class AuthServiceImpl implements AuthService {
     private final AccountMapper accountMapper;
 
     public AuthServiceImpl(
-            AccountRepository accountRepository, RoleRepository roleRepository,
-            AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder,
-            TokenService tokenService, AccountMapper accountMapper
+            AccountRepository accountRepository,
+            RoleRepository roleRepository,
+            AuthenticationManager authenticationManager,
+            PasswordEncoder passwordEncoder,
+            TokenService tokenService,
+            AccountMapper accountMapper
     ) {
         this.accountRepository = accountRepository;
         this.roleRepository = roleRepository;
@@ -46,28 +50,27 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RegisterAccountResponseDto registerNewAccount(RegisterDto registerDto) {
+    @Transactional
+    public AccountRegistrationResponseDto registerNewAccount(RegisterDto registerDto) {
 
         if (accountRepository.existsByEmail(registerDto.getEmail())) {
-            throw new AccountWithEmailAlreadyExistException(
-                    "Account with this email already exists"
-            );
+            throw new AccountWithEmailAlreadyExistException();
         }
 
-        Account newAccount = new Account();
+        Account account = new Account();
 
         Role userRole = roleRepository.findByAuthority(EAccountRole.USER)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new RuntimeException("Role not found."));
 
-        newAccount.setFirstName(registerDto.getFirstName());
-        newAccount.setLastName(registerDto.getLastName());
-        newAccount.setEmail(registerDto.getEmail());
-        newAccount.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        newAccount.setAuthorities(Set.of(userRole));
+        account.setFirstName(registerDto.getFirstName());
+        account.setLastName(registerDto.getLastName());
+        account.setEmail(registerDto.getEmail());
+        account.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        account.setAuthorities(Set.of(userRole));
 
-        accountRepository.save(newAccount);
+        accountRepository.save(account);
 
-        return accountMapper.INSTANCE.toRegisterAccountResponseDto(newAccount);
+        return accountMapper.toAccountRegistrationResponseDto(account);
     }
 
     @Override
@@ -79,9 +82,14 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
+        System.out.printf(authentication.getPrincipal().toString());
+        System.out.printf(authentication.getAuthorities().toString());
+
         String token = tokenService.generateJwt(authentication);
 
 //        AuthUserDetails userDetails = (AuthUserDetails) authentication.getPrincipal();
+//
+//        System.out.printf(userDetails.getUsername());
 
         return new LoginResponseDto(loginDto.getEmail(), token);
     }
