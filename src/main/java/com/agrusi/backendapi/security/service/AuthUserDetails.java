@@ -18,11 +18,10 @@ public class AuthUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+
         return account.getAuthorities().stream()
                 .map(a -> new SimpleGrantedAuthority(a.getAuthority()))
                 .collect(Collectors.toList());
-
-//        account.getAuthorities()
     }
 
     @Override
