@@ -19,7 +19,7 @@ public class AuthUserDetailsService implements UserDetailsService {
 
         return accountRepository
                 .findAccountByEmail(email)
-                .map(com.agrusi.backendapi.security.service.AuthUserDetails::new)
+                .map(AuthUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Account not found with email: " + email)
                 );
