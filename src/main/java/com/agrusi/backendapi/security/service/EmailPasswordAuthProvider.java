@@ -14,7 +14,10 @@ public class EmailPasswordAuthProvider implements AuthenticationProvider {
     private final AuthUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
-    public EmailPasswordAuthProvider(AuthUserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public EmailPasswordAuthProvider(
+            AuthUserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder
+    ) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -25,13 +28,13 @@ public class EmailPasswordAuthProvider implements AuthenticationProvider {
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        AuthUserDetails user = userDetailsService.loadUserByUsername(email);
+        AuthUserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-        if (passwordEncoder.matches(password, user.getPassword())) {
+        if (passwordEncoder.matches(password, userDetails.getPassword())) {
             return new UsernamePasswordAuthenticationToken(
-                    email,
+                    userDetails, // Needs to be "AuthUserDetails" !!!
                     password,
-                    user.getAuthorities());
+                    userDetails.getAuthorities());
         } else {
             throw new BadCredentialsException("Bad credentials");
         }
