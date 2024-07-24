@@ -6,6 +6,19 @@
 
 3. Implement exception handling for invalid URLs, for example, when a user requests something from a URL that doesn't exist.
 
+4. Documentation as well as adding comments like these above classes/methods in the project:
+
+    ```Java
+   /**
+   * @param tagID - ID of the tag
+   * @param startDate - Starting Date
+   * @param endDate - End date
+   * @param estimated <-- this is not the param - should be removed or fix doc
+   * @return <-- missing return param and description
+   * @throws ServerException -- throws server exception
+   */
+   ```
+
 
 ## Entity design
 
