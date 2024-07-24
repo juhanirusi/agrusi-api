@@ -13,8 +13,29 @@
 	<groupId>com.agrusi</groupId>
 	<artifactId>backend-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
 	<name>backend-api</name>
 	<description>The backend REST API for Agrusi.</description>
+	<inceptionYear>2024</inceptionYear>
+
+	<url>http://agrusi.com</url> <!-- REMEMBER TO CHANGE THIS !!! -->
+
+	<developers>
+
+		<developer>
+			<id>juhanirusi</id>
+			<name>Juhani Rusi</name>
+			<email>juhanirusi@outlook.com</email>
+			<url>https://github.com/juhanirusi</url>
+			<organization>Agrusi</organization>
+			<roles>
+				<role>developer</role>
+				<role>architect</role>
+				<role>tester</role>
+			</roles>
+		</developer>
+
+	</developers>
 
 	<properties>
 
@@ -27,6 +48,7 @@
 		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 		<hibernate.version>6.5.2.Final</hibernate.version>
 		<jts.version>1.19.0</jts.version>
+		<maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
 
 		<!-- GeoTools -->
 
@@ -230,6 +252,37 @@
 					</annotationProcessorPaths>
 
 				</configuration>
+			</plugin>
+
+			<!-- Maven Surefire plugin to run tests automatically on "maven test" -->
+
+			<!--
+			"-XX:+EnableDynamicAgentLoading" disables the warning about dynamic
+			tests, which will need to be fixed in the future, because
+
+			THIS ISN'T A GOOD / PERMANENT FIX !!!
+			-->
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<argLine>-XX:+EnableDynamicAgentLoading</argLine>
+					<includes>**/*Test.java</includes> <!-- include tests with the "Test" suffix -->
+				</configuration>
+			</plugin>
+
+			<!--
+			Maven site plugin that allows us to create a website
+			containing the documentation of our project.
+
+			Run with "site:run"
+			-->
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>4.0.0-M16</version>
 			</plugin>
 
 		</plugins>
