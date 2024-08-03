@@ -47,6 +47,7 @@
 		<spring-boot-maven.version>3.2.3</spring-boot-maven.version>
 		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 		<hibernate.version>6.5.2.Final</hibernate.version>
+		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
 		<jts.version>1.19.0</jts.version>
 		<maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
 
@@ -95,6 +96,9 @@
 
 		Includes several testing libraries including
 		JUnit, Mockito, Hamcrest, and AssertJ.
+
+		Also, "Hibernate validator" in order to test that
+		our hibernate specific validations work.
 		-->
 
 		<dependency>
@@ -107,6 +111,12 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>${hibernate-validator.version}</version>
 		</dependency>
 
 		<!-- TESTING END -->
