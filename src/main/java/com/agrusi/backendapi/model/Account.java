@@ -43,7 +43,7 @@ public class Account {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Email
+    @Email(message = "Please provide a valid email address.")
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
@@ -205,16 +205,19 @@ public class Account {
         return firstName + " " + lastName;
     }
 
+    // The account "ID" and the "public ID" need to be equal for the account to be same
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Account account)) return false;
-        return Objects.equals(getId(), account.getId());
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return Objects.equals(id, account.id) && Objects.equals(publicId, account.publicId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId());
+        return Objects.hash(id, publicId);
     }
 }
 
