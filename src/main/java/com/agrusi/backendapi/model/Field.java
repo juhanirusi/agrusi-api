@@ -128,4 +128,25 @@ public class Field {
     public BigDecimal getAreaSizeInAcres() {
         return size.divide(BigDecimal.valueOf(4_046.85642), 2, RoundingMode.HALF_UP);
     }
+
+    /*
+    * To determine that the same passenger is on different flights,
+    * Thomas has to override the "equals" and "hashCode" methods in the
+    * Passenger class. He'll know that two passengers are the same
+    * if they have the same identifier.
+    *
+    * @Override
+    * public boolean equals(Object o) {
+    *
+    *       if (this == o) return true;
+    *       if (o == null || getClass() != o.getClass()) return false;
+    *       Field field = (Field) o;
+    *       return Objects.equals(id, field.id);
+    * }
+    *
+    * @Override
+    * public int hashCode() {
+    *       return Objects.hash(id);
+    * }
+    */
 }
