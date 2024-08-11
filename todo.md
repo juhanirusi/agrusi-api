@@ -19,6 +19,8 @@
    */
    ```
 
+5. Adding the `equals` and `hashcode` methods into the entity classes.
+
 
 ## Entity design
 
