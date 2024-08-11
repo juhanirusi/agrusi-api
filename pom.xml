@@ -41,7 +41,11 @@
 
 		<java.version>21</java.version>
 
+		<!-- Databases -->
+
 		<postgresql.version>42.7.3</postgresql.version>
+		<h2database.version>2.3.230</h2database.version>
+
 		<passay.version>1.6.4</passay.version>
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 		<spring-boot-maven.version>3.2.3</spring-boot-maven.version>
@@ -135,6 +139,15 @@
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.version}</version>
 			<scope>runtime</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${h2database.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-spatial -->
