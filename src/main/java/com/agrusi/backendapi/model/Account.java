@@ -220,4 +220,3 @@ public class Account {
         return Objects.hash(getId(), getPublicId());
     }
 }
-
