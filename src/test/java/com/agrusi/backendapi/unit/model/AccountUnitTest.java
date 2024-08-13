@@ -1,5 +1,6 @@
 package com.agrusi.backendapi.unit.model;
 
+import com.agrusi.backendapi.UnitTest;
 import com.agrusi.backendapi.model.Account;
 import com.agrusi.backendapi.model.UserAddress;
 import com.agrusi.backendapi.unit.util.ReflectionTestUtils;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@UnitTest
 public class AccountUnitTest {
 
     private Account account;
