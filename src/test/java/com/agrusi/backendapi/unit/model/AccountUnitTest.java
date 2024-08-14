@@ -18,6 +18,11 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/*
+ * @UnitTest --> Our custom annotation allowing us to run only
+ * unit tests if we want to
+*/
+
 @UnitTest
 public class AccountUnitTest {
 
