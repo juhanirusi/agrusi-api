@@ -1,11 +1,13 @@
 package com.agrusi.backendapi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +28,11 @@ public class Farm {
     @Column(name = "public_id", updatable = false, nullable = false, unique = true)
     private UUID publicId;
 
+    @Size(
+            min = 2,
+            max = 255,
+            message = "Farm name is required, maximum 255 characters."
+    )
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -46,7 +53,7 @@ public class Farm {
     private LocalDateTime lastUpdated;
 
     @PrePersist
-    public void prePersist() {
+    public void createPublicId() {
 
         if (publicId == null) {
             publicId = UUID.randomUUID();
@@ -116,5 +123,18 @@ public class Farm {
 
     public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Farm farm)) return false;
+        return Objects.equals(getId(), farm.getId()) &&
+                Objects.equals(getPublicId(), farm.getPublicId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getPublicId());
     }
 }
