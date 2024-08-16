@@ -1,11 +1,13 @@
 package com.agrusi.backendapi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 @Entity(name = "field")
 @Table(name = "field")
@@ -21,6 +23,11 @@ public class Field {
     @Column(updatable = false, nullable = false, unique = true)
     private Long id;
 
+    @Size(
+            min = 2,
+            max = 255,
+            message = "Field name is required, maximum 255 characters."
+    )
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -129,24 +136,16 @@ public class Field {
         return size.divide(BigDecimal.valueOf(4_046.85642), 2, RoundingMode.HALF_UP);
     }
 
-    /*
-    * To determine that the same passenger is on different flights,
-    * Thomas has to override the "equals" and "hashCode" methods in the
-    * Passenger class. He'll know that two passengers are the same
-    * if they have the same identifier.
-    *
-    * @Override
-    * public boolean equals(Object o) {
-    *
-    *       if (this == o) return true;
-    *       if (o == null || getClass() != o.getClass()) return false;
-    *       Field field = (Field) o;
-    *       return Objects.equals(id, field.id);
-    * }
-    *
-    * @Override
-    * public int hashCode() {
-    *       return Objects.hash(id);
-    * }
-    */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Field field)) return false;
+        return Objects.equals(getId(), field.getId()) &&
+                Objects.equals(getFarm(), field.getFarm());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getFarm());
+    }
 }
