@@ -43,7 +43,7 @@ public class Role implements GrantedAuthority {
     /*
      * Primary key values never change, so you shouldn't allow the
      * identifier property value to be modified. Hibernate and Spring
-     * Data JPA using Hibernate as a provider won’t update a primary
+     * Data JPA using Hibernate as a provider won't update a primary
      * key column, and you shouldn't expose a public identifier
      * setter method on an entity!
     */
