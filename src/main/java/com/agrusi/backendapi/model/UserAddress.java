@@ -2,6 +2,8 @@ package com.agrusi.backendapi.model;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity(name = "user_address")
 @Table(name = "user_address")
 public class UserAddress extends Address {
@@ -42,5 +44,20 @@ public class UserAddress extends Address {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    // The account "ID" and the "public ID" need to be equal for the account to be same
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserAddress userAddress)) return false;
+        return Objects.equals(getId(), userAddress.getId()) &&
+                Objects.equals(getAccount(), userAddress.getAccount());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getAccount());
     }
 }
