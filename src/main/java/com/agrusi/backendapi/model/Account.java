@@ -111,12 +111,36 @@ public class Account {
         this.lastUpdated = lastUpdated;
     }
 
+    public Account(
+            Long id,
+            UUID publicId,
+            String firstName,
+            String lastName,
+            String email,
+            String password,
+            Set<Role> authorities,
+            boolean isVerified,
+            LocalDateTime dateCreated,
+            LocalDateTime lastUpdated
+    ) {
+        this.id = id;
+        this.publicId = publicId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
+        this.isVerified = isVerified;
+        this.dateCreated = dateCreated;
+        this.lastUpdated = lastUpdated;
+    }
+
     public Long getId() {
         return id;
     }
 
     /*
-    * Primary key values never change, so you shouldn't allow the
+    * Primary key values never change, so we shouldn't allow the
     * identifier property value to be modified. Hibernate and Spring
     * Data JPA using Hibernate as a provider won’t update a primary
     * key column, and you shouldn't expose a public identifier
