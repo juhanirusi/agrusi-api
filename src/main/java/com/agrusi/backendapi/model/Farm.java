@@ -65,6 +65,18 @@ public class Farm {
 
     public Farm(
             Long id,
+            String name,
+            LocalDateTime dateCreated,
+            LocalDateTime lastUpdated
+    ) {
+        this.id = id;
+        this.name = name;
+        this.dateCreated = dateCreated;
+        this.lastUpdated = lastUpdated;
+    }
+
+    public Farm(
+            Long id,
             UUID publicId,
             String name,
             LocalDateTime dateCreated,
