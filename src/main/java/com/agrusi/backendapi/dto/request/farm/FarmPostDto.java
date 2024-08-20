@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 public class FarmPostDto {
 
     @NotBlank(message = "Farm name is mandatory.")
-    @NotEmpty(message = "Email can't be empty.")
+    @NotEmpty(message = "Farm name can't be empty.")
     @Size(
             min = 2,
             max = 255,
