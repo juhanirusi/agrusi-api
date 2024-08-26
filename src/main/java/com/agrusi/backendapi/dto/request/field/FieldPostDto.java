@@ -15,7 +15,7 @@ public class FieldPostDto {
             min = 2,
             max = 255,
             message = "Field name is required and needs to be " +
-                    "between {min} and {max} characters long.."
+                    "between {min} and {max} characters long."
     )
     private String name;
 
