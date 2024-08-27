@@ -71,7 +71,7 @@ public class FarmController {
         return ResponseHandler.generateSuccessResponse(
                 HttpStatus.OK,
                 "Farm deleted successfully.",
-                Map.of("publicFarmId", publicFarmId)
+                Map.of("publicId", publicFarmId)
         );
     }
 }
