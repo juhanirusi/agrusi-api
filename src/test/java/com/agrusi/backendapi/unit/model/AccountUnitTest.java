@@ -176,7 +176,7 @@ public class AccountUnitTest {
             account.setAuthorities(new HashSet<>());
 
             assertAll(
-                    "Grouped assertions of Farm",
+                    "Grouped assertions of Account",
                     () -> assertEquals(1L, account.getId()),
                     () -> assertEquals(UUID.fromString("123e4567-e89b-12d3-a456-556642440000"), account.getPublicId()),
                     () -> assertEquals("Jack", account.getFirstName()),
