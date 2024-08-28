@@ -8,26 +8,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /*
  * @IntegrationTest --> Our custom annotation allowing us to run only
  * integration tests if we want to
- *
- * @DirtiesContext --> Allowing us to tell Spring to close and re-create
- * the ApplicationContext for each test class or method, effectively
- * resetting the database, because we had problems with tests
- * failing due to already existing entities.
 */
 
 @IntegrationTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @DataJpaTest
 @TestPropertySource(locations = {"classpath:application-test.properties"})
 public class AccountRepositoryIntegrationTest {
@@ -45,11 +38,12 @@ public class AccountRepositoryIntegrationTest {
         account.setLastName("Farmer");
         account.setEmail("jack.farmer@example.com");
         account.setPassword("password123");
+
         accountRepository.save(account);
     }
 
     @Test
-    @DisplayName("Find account by email.")
+    @DisplayName("Get an account by email.")
     public void testFindAccountByEmail() {
 
         Optional<Account> foundAccount = accountRepository.findAccountByEmail("jack.farmer@example.com");
@@ -59,7 +53,16 @@ public class AccountRepositoryIntegrationTest {
     }
 
     @Test
-    @DisplayName("Find account by public ID.")
+    @DisplayName("Account not found by email.")
+    public void testFindAccountByEmail_NotFound() {
+
+        Optional<Account> foundAccount = accountRepository.findAccountByEmail("nonexistent@example.com");
+
+        assertTrue(foundAccount.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Get an account by public ID.")
     public void testFindAccountByPublicId() {
 
         Optional<Account> foundAccount = accountRepository.findAccountByPublicId(account.getPublicId());
@@ -69,11 +72,29 @@ public class AccountRepositoryIntegrationTest {
     }
 
     @Test
-    @DisplayName("Test that account exists by email.")
+    @DisplayName("Account not found by public ID.")
+    public void testFindAccountByPublicId_NotFound() {
+
+        Optional<Account> foundAccount = accountRepository.findAccountByPublicId(UUID.randomUUID());
+
+        assertTrue(foundAccount.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Account exists by email.")
     public void testExistsByEmail() {
 
         Boolean exists = accountRepository.existsByEmail("jack.farmer@example.com");
 
         assertTrue(exists);
+    }
+
+    @Test
+    @DisplayName("Account doesn't exists by email")
+    public void testExistsByEmail_NonExistingAccount() {
+
+        Boolean exists = accountRepository.existsByEmail("nonexistent@example.com");
+
+        assertFalse(exists);
     }
 }
