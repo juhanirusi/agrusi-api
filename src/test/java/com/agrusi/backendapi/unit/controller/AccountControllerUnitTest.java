@@ -1,6 +1,7 @@
-package com.agrusi.backendapi.integration.controller;
+package com.agrusi.backendapi.unit.controller;
 
-import com.agrusi.backendapi.IntegrationTest;
+import com.agrusi.backendapi.UnitTest;
+import com.agrusi.backendapi.controller.AccountController;
 import com.agrusi.backendapi.dto.request.account.AccountPutGeneralDto;
 import com.agrusi.backendapi.dto.response.account.AccountBasicResponseDto;
 import com.agrusi.backendapi.dto.response.account.AccountFullResponseDto;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,23 +28,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /*
-* Combining "@SpringBootTest" with "@AutoConfigureMockMvc" allows for
-* testing in a full Spring Boot application context while utilizing
-* the convenience and speed of MockMvc for making requests. This hybrid
-* approach is beneficial when you need to test the web layer in a more
-* realistic environment that includes all the Spring Boot
-* configurations and beans...
+* @UnitTest --> Our custom annotation allowing us to run only
+* unit tests if we want to.
 *
-* https://rieckpil.de/choosing-between-mockmvc-and-springboottest-for-testing/
-*
-* @IntegrationTest --> Our custom annotation allowing us to run only
-* integration tests if we want to
+* @AutoConfigureMockMvc(addFilters = false) --> Disable security
+* filters for these tests, and test Spring Security in separate
+* tests, this class is for testing controller logic only.
 */
 
-@IntegrationTest
-@SpringBootTest
-@AutoConfigureMockMvc
-class AccountControllerIntegrationTest {
+@UnitTest
+@WebMvcTest(AccountController.class)
+@AutoConfigureMockMvc(addFilters = false)
+class AccountControllerUnitTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -104,6 +100,8 @@ class AccountControllerIntegrationTest {
 
         mockMvc.perform(get("/api/v1/accounts/{publicId}", publicId))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.message").value("Account details fetched successfully."))
                 .andExpect(jsonPath("$.data.publicId").value(publicId.toString()))
                 .andExpect(jsonPath("$.data.firstName").value("Jack"))
                 .andExpect(jsonPath("$.data.lastName").value("Farmer"))
@@ -150,6 +148,9 @@ class AccountControllerIntegrationTest {
     @DisplayName("Try updating (PUT) account basic info with INVALID data.")
     public void testUpdateAccountBasicInfoPutValidationError() throws Exception {
 
+        // No need to use "when", because this test is designed to check the
+        // controller's behavior when invalid data is provided.
+
         mockMvc.perform(put("/api/v1/accounts/{publicId}", publicId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidUpdateDto)))
@@ -179,26 +180,4 @@ class AccountControllerIntegrationTest {
                 .andExpect(jsonPath("$.message").value("Account deleted successfully."))
                 .andExpect(jsonPath("$.data.publicId").value(publicId.toString()));
     }
-
-    // TODO --> MAKE THIS TEST WORK AS WELL...
-
-//    @Test
-//    @DisplayName("Test deleting account when user is NOT AUTHORIZED TO DO SO.")
-//    public void testDeleteAccountNotAuthorized() throws Exception {
-//
-//        UUID unauthorizedPublicId = UUID.randomUUID();
-//
-//        doThrow(new SecurityException("You are not authorized to delete this account"))
-//                .when(accountService).deleteAccountByPublicId(unauthorizedPublicId);
-//
-//        mockMvc.perform(delete("/api/v1/accounts/{publicId}", unauthorizedPublicId))
-//                .andExpect(status().isForbidden())
-//                .andExpect(jsonPath("$.status").value("error"))
-//                .andExpect(jsonPath("$.message").value("You are not authorized to delete this account"))
-//                .andExpect(jsonPath("$.errors").isArray())
-//                .andExpect(jsonPath("$.errors[0].message").value("You are not authorized to delete this account"));
-//
-//        verify(accountService, times(1)).deleteAccountByPublicId(unauthorizedPublicId);
-//    }
 }
-
