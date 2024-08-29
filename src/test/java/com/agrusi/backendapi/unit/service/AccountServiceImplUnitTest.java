@@ -95,7 +95,7 @@ public class AccountServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("Test getting an account with public ID SUCCESSFULLY.")
+    @DisplayName("Get an account with public ID.")
     public void testGetAccountByPublicIdSuccess() {
 
         when(accountRepository.findAccountByPublicId(publicId)).thenReturn(Optional.of(account));
@@ -108,7 +108,7 @@ public class AccountServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("Test getting an Account with public ID UNSUCCESSFULLY.")
+    @DisplayName("Get an (non-existent) account with public ID.")
     public void testGetAccountByPublicIdNotFound() {
 
         when(accountRepository.findAccountByPublicId(publicId)).thenReturn(Optional.empty());
@@ -119,7 +119,7 @@ public class AccountServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("Test updating Account's basic info.")
+    @DisplayName("Update an account's basic info.")
     public void testUpdateAccountBasicInfoByPublicId() {
 
         when(accountRepository.findAccountByPublicId(publicId)).thenReturn(Optional.of(account));
@@ -141,7 +141,7 @@ public class AccountServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("Test deleting an Account by public ID.")
+    @DisplayName("Delete an account by public ID.")
     public void testDeleteAccountByPublicId() {
 
         when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -156,7 +156,7 @@ public class AccountServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("Test deleting an account that doesn't exist.")
+    @DisplayName("Try deleting an account that doesn't exist.")
     public void testDeleteAccountByPublicIdNotFound() {
 
         UUID publicId = UUID.randomUUID();
