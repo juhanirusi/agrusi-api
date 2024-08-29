@@ -4,12 +4,15 @@ import com.agrusi.backendapi.UnitTest;
 import com.agrusi.backendapi.dto.request.auth.RegisterDto;
 import com.agrusi.backendapi.dto.response.auth.AccountRegistrationResponseDto;
 import com.agrusi.backendapi.enums.EAccountRole;
+import com.agrusi.backendapi.exception.auth.AccountWithEmailAlreadyExistException;
 import com.agrusi.backendapi.mapper.AccountMapper;
 import com.agrusi.backendapi.model.Account;
 import com.agrusi.backendapi.model.Role;
 import com.agrusi.backendapi.repository.AccountRepository;
 import com.agrusi.backendapi.repository.RoleRepository;
 import com.agrusi.backendapi.service.impl.AuthServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,12 +23,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /*
  * @UnitTest --> Our custom annotation allowing us to run only
@@ -51,17 +52,23 @@ public class AuthServiceImplUnitTest {
     @InjectMocks
     private AuthServiceImpl authService;
 
-    @Test
-    public void testRegisterNewAccount() {
+    private Account account;
+    private Role userRole;
 
-        RegisterDto registerDto = new RegisterDto(
+    private RegisterDto registerDto;
+    private AccountRegistrationResponseDto registrationResponseDto;
+
+    @BeforeEach
+    public void setUp() {
+
+        registerDto = new RegisterDto(
                 "Jack",
                 "Farmer",
                 "jack.farmer@example.com",
                 "password123"
         );
 
-        AccountRegistrationResponseDto registrationResponseDto = new AccountRegistrationResponseDto(
+        registrationResponseDto = new AccountRegistrationResponseDto(
                 UUID.randomUUID(),
                 "jack.farmer@example.com",
                 "Jack",
@@ -69,8 +76,13 @@ public class AuthServiceImplUnitTest {
                 false
         );
 
-        Role userRole = new Role(EAccountRole.USER);
-        Account account = new Account();
+        userRole = new Role(EAccountRole.USER);
+        account = new Account();
+    }
+
+    @Test
+    @DisplayName("Register a new user account.")
+    public void testRegisterNewAccount() {
 
         when(accountRepository.existsByEmail(anyString())).thenReturn(false);
         when(roleRepository.findByAuthority(any(EAccountRole.class))).thenReturn(Optional.of(userRole));
@@ -86,7 +98,25 @@ public class AuthServiceImplUnitTest {
 
         assertNotNull(responseDto);
         assertEquals(registrationResponseDto, responseDto);
-
-        // TODO --> ADD TEST FOR LOGGING IN !!!
     }
+
+    @Test
+    @DisplayName("Try registering an account (email) that already exists.")
+    public void testRegisterNewAccountAccountAlreadyExists() {
+
+        when(accountRepository.existsByEmail(anyString())).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(
+                AccountWithEmailAlreadyExistException.class,
+                () -> authService.registerNewAccount(registerDto)
+        );
+
+        // Verify that save is never called since the exception
+        // should short-circuit the process
+
+        verify(accountRepository, never()).save(any(Account.class));
+    }
+
+    // TODO --> ADD TEST FOR LOGGING IN !!!
 }
