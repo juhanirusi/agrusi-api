@@ -21,6 +21,8 @@
 
 5. Adding the `equals` and `hashcode` methods into the entity classes.
 
+6. Edit the password validation constraint messages to be some kind of list.
+
 
 ## Entity design
 
