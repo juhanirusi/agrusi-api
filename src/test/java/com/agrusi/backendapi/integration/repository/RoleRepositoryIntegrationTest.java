@@ -27,7 +27,7 @@ public class RoleRepositoryIntegrationTest {
 
     @Test
     @DisplayName("Find role by authority.")
-    public void testFindAccountByEmail() {
+    public void testFindRoleByAuthority() {
 
         Optional<Role> userRole = roleRepository.findByAuthority(EAccountRole.USER);
 
