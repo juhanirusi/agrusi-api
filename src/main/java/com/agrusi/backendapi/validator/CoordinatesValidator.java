@@ -6,6 +6,12 @@ import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.List;
 
+/*
+* Notice that we're using ".disableDefaultConstraintViolation()" here when we
+* add a new constraint violation. That's because we don't want to also throws
+* our default 'Invalid coordinates format.' constraint message.
+*/
+
 public class CoordinatesValidator implements
         ConstraintValidator<ValidCoordinates, List<List<List<Double>>>> {
 
@@ -16,7 +22,7 @@ public class CoordinatesValidator implements
 
             context.buildConstraintViolationWithTemplate(
                     "Coordinates can't be empty."
-            ).addConstraintViolation();
+            ).addConstraintViolation().disableDefaultConstraintViolation();
 
             return false; // When the coordinates are empty or null
         }
@@ -35,7 +41,7 @@ public class CoordinatesValidator implements
         if (polygon.size() < 4) {
             context.buildConstraintViolationWithTemplate(
                     "A valid field must have at least 4 point coordinates (including the closing point)."
-            ).addConstraintViolation();
+            ).addConstraintViolation().disableDefaultConstraintViolation();
 
             return false; // A valid polygon must have at least 4 points (including the closing point)
         }
@@ -45,7 +51,7 @@ public class CoordinatesValidator implements
             if (point.size() != 2) {
                 context.buildConstraintViolationWithTemplate(
                         "Each coordinate must be a pair of doubles (longitude, latitude)."
-                ).addConstraintViolation();
+                ).addConstraintViolation().disableDefaultConstraintViolation();
 
                 return false; // Each coordinate must be a pair of doubles (longitude, latitude)
             }
@@ -65,7 +71,7 @@ public class CoordinatesValidator implements
         if (!firstPoint.equals(lastPoint)) {
             context.buildConstraintViolationWithTemplate(
                     "The field needs to have the closing coordinates (same as the first coordinates)."
-            ).addConstraintViolation();
+            ).addConstraintViolation().disableDefaultConstraintViolation();
 
             return false;
         }
