@@ -24,8 +24,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /*
  * @UnitTest --> Our custom annotation allowing us to run only
@@ -92,7 +91,7 @@ public class FarmServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("Test creating a new farm.")
+    @DisplayName("Create a new farm.")
     public void testCreateNewFarm() {
 
         when(farmRepository.save(any(Farm.class))).thenReturn(farm);
@@ -108,7 +107,7 @@ public class FarmServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("Test getting Farm by public ID SUCCESSFULLY.")
+    @DisplayName("Get a farm by public ID.")
     public void testGetFarmByPublicId() {
 
         when(farmRepository.findByPublicId(publicId)).thenReturn(Optional.of(farm));
@@ -121,7 +120,7 @@ public class FarmServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("Test getting Farm by public ID UNSUCCESSFULLY - Farm Not Found")
+    @DisplayName("Get a farm by public ID (FarmNotFound)")
     public void testGetFarmByPublicIdNotFound() {
 
         when(farmRepository.findByPublicId(publicId)).thenReturn(Optional.empty());
@@ -129,10 +128,15 @@ public class FarmServiceImplUnitTest {
         assertThrows(FarmNotFoundException.class, () -> {
             farmService.getFarmByPublicId(publicId);
         });
+
+        // Verify that save is never called since the exception
+        // should short-circuit the process
+
+        verify(farmRepository, never()).save(any(Farm.class));
     }
 
     @Test
-    @DisplayName("Test PATCH updating Farm.")
+    @DisplayName("Update (PATCH) a farm.")
     public void testUpdateFarmByPublicIdPatch() {
 
         when(farmRepository.findByPublicId(publicId)).thenReturn(Optional.of(farm));
@@ -153,7 +157,7 @@ public class FarmServiceImplUnitTest {
     }
 
     @Test
-    @DisplayName("Test deleting a Farm by public ID.")
+    @DisplayName("Delete a farm by public ID.")
     public void testDeleteFarmByPublicId() {
 
         when(farmRepository.findByPublicId(publicId)).thenReturn(Optional.of(farm));
