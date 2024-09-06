@@ -40,7 +40,12 @@ public class RegisterDto {
     public RegisterDto() {
     }
 
-    public RegisterDto(String firstName, String lastName, String email, String password) {
+    public RegisterDto(
+            String firstName,
+            String lastName,
+            String email,
+            String password
+    ) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
