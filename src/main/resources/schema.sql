@@ -26,3 +26,11 @@ CREATE SEQUENCE IF NOT EXISTS field_sequence START WITH 1 INCREMENT BY 1;
 --    date_created TIMESTAMP NOT NULL,
 --    last_updated TIMESTAMP NOT NULL
 --);
+
+--CREATE TABLE IF NOT EXISTS farm (
+--    id BIGINT NOT NULL DEFAULT nextval('farm_sequence') PRIMARY KEY,
+--    public_id UUID NOT NULL UNIQUE,
+--    name VARCHAR(255) NOT NULL,
+--    date_created TIMESTAMP NOT NULL,
+--    last_updated TIMESTAMP NOT NULL
+--);
