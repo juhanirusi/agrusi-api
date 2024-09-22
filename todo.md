@@ -23,6 +23,8 @@
 
 6. Edit the password validation constraint messages to be some kind of list.
 
+7. Add square feet (ft2) as a new area unit
+
 
 ## Entity design
 
