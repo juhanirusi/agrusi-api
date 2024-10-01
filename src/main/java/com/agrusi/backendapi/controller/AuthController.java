@@ -41,7 +41,8 @@ public class AuthController {
     }
 
     // Log in an existing user REST API endpoint...
-    // TODO --> COMPLETE THIS BY ADDING ERROR HANDLING...
+    // TODO --> COMPLETE THIS BY ADDING ERROR HANDLING AS WELL AS REMOVING
+    //  THE TESTING METHODS AT THE BOTTOM
 
     @PostMapping(value = "/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDto) {
