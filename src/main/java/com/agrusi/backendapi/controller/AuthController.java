@@ -5,10 +5,13 @@ import com.agrusi.backendapi.dto.request.auth.RegisterDto;
 import com.agrusi.backendapi.dto.response.auth.AccountRegistrationResponseDto;
 import com.agrusi.backendapi.dto.response.auth.LoginResponseDto;
 import com.agrusi.backendapi.handler.ResponseHandler;
+import com.agrusi.backendapi.security.service.AuthUserDetails;
 import com.agrusi.backendapi.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -63,6 +66,29 @@ public class AuthController {
 
     @GetMapping(value = "/user")
     public Principal user(Principal user) {
+
         return user;
+    }
+
+    @GetMapping(value = "/test_fetching_user_details")
+    private String fetchUserDetails() {
+
+        // Get the currently authenticated user's details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String toReturn = "";
+
+        // Make sure the principal is an instance of your custom AuthUserDetails
+        if (authentication != null && authentication.getPrincipal() instanceof AuthUserDetails userDetails) {
+
+            // Access the custom method
+            boolean accountEnabled = userDetails.isEnabled();
+            toReturn = "The user account is enabled: " + accountEnabled;
+        }
+        else {
+            toReturn = "ERROR";
+        }
+
+        return toReturn;
     }
 }
