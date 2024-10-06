@@ -3,6 +3,7 @@ package com.agrusi.backendapi.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -51,13 +52,13 @@ public class Account {
     @Column(name = "password", nullable = false)
     private String password;
 
-    // mappedBy = "account", because "Account" is the owning entity !!!
+    // Store the phone number in E.164 format - the number starts
+    // with a +, followed by digits, with a total length between 1 and
+    // 15 digits, which adheres to the E.164 standard.
 
-    @OneToMany(
-            mappedBy = "account", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL, orphanRemoval = true
-    )
-    private List<UserAddress> addresses = new ArrayList<>();
+    @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid phone number")
+    @Column(unique = true)
+    private String phoneNumber;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -67,8 +68,29 @@ public class Account {
     )
     private Set<Role> authorities = new HashSet<>();
 
-    @Column(name = "is_verified", nullable = false)
-    private boolean isVerified = false;
+    // Account owns the relationship
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_profile_id", referencedColumnName = "id") // FK in Account
+    private UserProfile userProfile;
+
+    // Account owns the relationship
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_preferences_id", referencedColumnName = "id") // FK in Account
+    private AccountPreferences accountPreferences;
+
+    // mappedBy = "account", because "Account" is the owning entity !!!
+
+    @OneToMany(
+            mappedBy = "account", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true
+    )
+    private List<UserAddress> addresses = new ArrayList<>();
+
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(name = "phone_verified", nullable = false)
+    private boolean phoneVerified = false;
 
     @CreationTimestamp
     @Column(name = "date_created", updatable = false)
@@ -96,7 +118,7 @@ public class Account {
             String email,
             String password,
             Set<Role> authorities,
-            boolean isVerified,
+            boolean emailVerified,
             LocalDateTime dateCreated,
             LocalDateTime lastUpdated
     ) {
@@ -106,7 +128,7 @@ public class Account {
         this.email = email;
         this.password = password;
         this.authorities = authorities;
-        this.isVerified = isVerified;
+        this.emailVerified = emailVerified;
         this.dateCreated = dateCreated;
         this.lastUpdated = lastUpdated;
     }
@@ -119,7 +141,7 @@ public class Account {
             String email,
             String password,
             Set<Role> authorities,
-            boolean isVerified,
+            boolean emailVerified,
             LocalDateTime dateCreated,
             LocalDateTime lastUpdated
     ) {
@@ -130,13 +152,9 @@ public class Account {
         this.email = email;
         this.password = password;
         this.authorities = authorities;
-        this.isVerified = isVerified;
+        this.emailVerified = emailVerified;
         this.dateCreated = dateCreated;
         this.lastUpdated = lastUpdated;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     /*
@@ -146,6 +164,10 @@ public class Account {
     * key column, and you shouldn't expose a public identifier
     * setter method on an entity!
     */
+
+    public Long getId() {
+        return id;
+    }
 
     public UUID getPublicId() {
         return publicId;
@@ -183,12 +205,12 @@ public class Account {
         this.password = password;
     }
 
-    public List<UserAddress> getAddresses() {
-        return addresses;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setAddresses(List<UserAddress> addresses) {
-        this.addresses = addresses;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public Set<Role> getAuthorities() {
@@ -199,12 +221,44 @@ public class Account {
         this.authorities = authorities;
     }
 
-    public boolean isVerified() {
-        return isVerified;
+    public boolean isEmailVerified() {
+        return emailVerified;
     }
 
-    public void setVerified(boolean verified) {
-        isVerified = verified;
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public boolean isPhoneVerified() {
+        return phoneVerified;
+    }
+
+    public void setPhoneVerified(boolean phoneVerified) {
+        this.phoneVerified = phoneVerified;
+    }
+
+    public UserProfile getUserProfile() {
+        return userProfile;
+    }
+
+    public void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
+    }
+
+    public AccountPreferences getAccountPreferences() {
+        return accountPreferences;
+    }
+
+    public void setAccountPreferences(AccountPreferences accountPreferences) {
+        this.accountPreferences = accountPreferences;
+    }
+
+    public List<UserAddress> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<UserAddress> addresses) {
+        this.addresses = addresses;
     }
 
     public LocalDateTime getDateCreated() {
