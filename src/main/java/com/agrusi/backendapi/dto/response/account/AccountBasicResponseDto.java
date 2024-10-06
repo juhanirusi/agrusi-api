@@ -5,7 +5,8 @@ import java.util.UUID;
 public record AccountBasicResponseDto(
         UUID publicId,
         String email,
+        String phoneNumber,
         String firstName,
         String lastName,
-        boolean accountVerified
+        boolean emailVerified
 ) { }
