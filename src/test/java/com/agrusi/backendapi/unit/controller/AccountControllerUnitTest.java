@@ -2,9 +2,11 @@ package com.agrusi.backendapi.unit.controller;
 
 import com.agrusi.backendapi.UnitTest;
 import com.agrusi.backendapi.controller.AccountController;
-import com.agrusi.backendapi.dto.request.account.AccountPutGeneralDto;
+import com.agrusi.backendapi.dto.request.account.AccountPatchGeneralDto;
+import com.agrusi.backendapi.dto.request.account.AccountPreferencesPatchDto;
 import com.agrusi.backendapi.dto.response.account.AccountBasicResponseDto;
 import com.agrusi.backendapi.dto.response.account.AccountFullResponseDto;
+import com.agrusi.backendapi.dto.response.account.AccountPreferencesResponseDto;
 import com.agrusi.backendapi.exception.account.AccountWithPublicIdNotFoundException;
 import com.agrusi.backendapi.service.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,49 +55,34 @@ class AccountControllerUnitTest {
     private UUID publicId;
     private UUID nonExistentPublicId;
 
-    private AccountFullResponseDto expectedAccountFullResponseDto;
-    private AccountPutGeneralDto updateAccountBasicInfoPutDto;
-    private AccountPutGeneralDto invalidUpdateDto;
-    private AccountBasicResponseDto accountBasicResponseDto;
-
     @BeforeEach
     public void setUp() {
 
         publicId = UUID.randomUUID();
         nonExistentPublicId = UUID.randomUUID();
-
-        expectedAccountFullResponseDto = new AccountFullResponseDto(
-                publicId,
-                "jack.farmer@example.com",
-                "Jack",
-                "Farmer",
-                true,
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
-
-        updateAccountBasicInfoPutDto = new AccountPutGeneralDto("Jane", "Rancher");
-
-        invalidUpdateDto = new AccountPutGeneralDto(
-                "J",
-                "R"
-        );
-
-        accountBasicResponseDto = new AccountBasicResponseDto(
-                publicId,
-                "jack.farmer@example.com",
-                "Jane",
-                "Rancher",
-                true
-        );
     }
 
     @Test
     @DisplayName("Get an account.")
     public void testGetAccount() throws Exception {
 
+        String email = "jack.farmer@example.com";
+        String firstName = "Jack";
+        String lastName = "Farmer";
+        boolean emailVerified = true;
+
+        AccountFullResponseDto responseDto = new AccountFullResponseDto(
+                publicId,
+                email,
+                firstName,
+                lastName,
+                emailVerified,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+
         when(accountService.getAccountByPublicId(publicId)).thenReturn(
-                expectedAccountFullResponseDto
+                responseDto
         );
 
         mockMvc.perform(get("/api/v1/accounts/{publicId}", publicId))
@@ -103,10 +90,10 @@ class AccountControllerUnitTest {
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").value("Account details fetched successfully."))
                 .andExpect(jsonPath("$.data.publicId").value(publicId.toString()))
-                .andExpect(jsonPath("$.data.firstName").value("Jack"))
-                .andExpect(jsonPath("$.data.lastName").value("Farmer"))
-                .andExpect(jsonPath("$.data.email").value("jack.farmer@example.com"))
-                .andExpect(jsonPath("$.data.accountVerified").value(true));
+                .andExpect(jsonPath("$.data.email").value(email))
+                .andExpect(jsonPath("$.data.firstName").value(firstName))
+                .andExpect(jsonPath("$.data.lastName").value(lastName))
+                .andExpect(jsonPath("$.data.emailVerified").value(emailVerified));
     }
 
     @Test
@@ -127,31 +114,68 @@ class AccountControllerUnitTest {
     }
 
     @Test
-    @DisplayName("Update (PUT) an account's general info.")
-    public void testUpdateAccountBasicInfoPut() throws Exception {
+    @DisplayName("Update (PATCH) an account's general info.")
+    public void testUpdateAccountBasicInfoPatch() throws Exception {
 
-        when(accountService.updateAccountBasicInfoByPublicIdPut(
-                any(UUID.class), any(AccountPutGeneralDto.class)
-        )).thenReturn(accountBasicResponseDto);
+        String updateFirstNameTo = "Jane";
+        String updateLastNameTo = "Rancher";
+        String updateEmailTo = "jack.farmer@example.com";
+        String updatePhoneNumberTo = "+358501234567";
 
-        mockMvc.perform(put("/api/v1/accounts/{publicId}", publicId)
+        String email = "jack.farmer@example.com";
+        String phoneNumber = "+358501234567";
+        String firstName = "Jane";
+        String lastName = "Rancher";
+        boolean emailVerified = true;
+
+        AccountPatchGeneralDto updateDto = new AccountPatchGeneralDto(
+                updateFirstNameTo,
+                updateLastNameTo,
+                updateEmailTo,
+                updatePhoneNumberTo
+        );
+
+        AccountBasicResponseDto responseDto = new AccountBasicResponseDto(
+                publicId,
+                email,
+                phoneNumber,
+                firstName,
+                lastName,
+                emailVerified
+        );
+
+        when(accountService.updateAccountBasicInfoByPublicIdPatch(
+                any(UUID.class), any(AccountPatchGeneralDto.class)
+        )).thenReturn(responseDto);
+
+        mockMvc.perform(patch("/api/v1/accounts/{publicId}", publicId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateAccountBasicInfoPutDto)))
+                        .content(objectMapper.writeValueAsString(updateDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").value("Account's general info updated successfully."))
-                .andExpect(jsonPath("$.data.firstName").value("Jane"))
-                .andExpect(jsonPath("$.data.lastName").value("Rancher"));
+                .andExpect(jsonPath("$.data.email").value(email))
+                .andExpect(jsonPath("$.data.phoneNumber").value(phoneNumber))
+                .andExpect(jsonPath("$.data.firstName").value(firstName))
+                .andExpect(jsonPath("$.data.lastName").value(lastName))
+                .andExpect(jsonPath("$.data.emailVerified").value(emailVerified));
     }
 
     @Test
-    @DisplayName("Try updating (PUT) account basic info with INVALID data.")
-    public void testUpdateAccountBasicInfoPutValidationError() throws Exception {
+    @DisplayName("Try updating (PATCH) account basic info with INVALID data.")
+    public void testUpdateAccountBasicInfoPatchValidationError() throws Exception {
+
+        AccountPatchGeneralDto invalidUpdateDto = new AccountPatchGeneralDto(
+                "J",
+                "R",
+                null,
+                "+358501234567"
+        );
 
         // No need to use "when", because this test is designed to check the
         // controller's behavior when invalid data is provided.
 
-        mockMvc.perform(put("/api/v1/accounts/{publicId}", publicId)
+        mockMvc.perform(patch("/api/v1/accounts/{publicId}", publicId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidUpdateDto)))
                 .andExpect(status().isBadRequest())
@@ -165,7 +189,7 @@ class AccountControllerUnitTest {
                 .andExpect(jsonPath("$.errors[0].field").exists())
                 .andExpect(jsonPath("$.errors[1].field").exists());
 
-        verify(accountService, never()).updateAccountBasicInfoByPublicIdPut(any(UUID.class), any(AccountPutGeneralDto.class));
+        verify(accountService, never()).updateAccountBasicInfoByPublicIdPatch(any(UUID.class), any(AccountPatchGeneralDto.class));
     }
 
     @Test
@@ -179,5 +203,71 @@ class AccountControllerUnitTest {
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").value("Account deleted successfully."))
                 .andExpect(jsonPath("$.data.publicId").value(publicId.toString()));
+    }
+
+    @Test
+    @DisplayName("Get account preferences.")
+    public void testGetAccountPreferences() throws Exception {
+
+        String languageCode = "fi";
+        String currencyCode = "EUR";
+        String timeZone = "Europe/Helsinki";
+
+        AccountPreferencesResponseDto responseDto = new AccountPreferencesResponseDto(
+                publicId,
+                languageCode,
+                currencyCode,
+                timeZone
+        );
+
+        when(accountService.getAccountPreferencesByPublicId(publicId)).thenReturn(
+                responseDto
+        );
+
+        mockMvc.perform(get("/api/v1/accounts/{publicId}/preferences", publicId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.message").value("Account preferences fetched successfully."))
+                .andExpect(jsonPath("$.data.publicId").value(publicId.toString()))
+                .andExpect(jsonPath("$.data.language").value(languageCode))
+                .andExpect(jsonPath("$.data.currency").value(currencyCode))
+                .andExpect(jsonPath("$.data.timeZone").value(timeZone));
+    }
+
+    @Test
+    @DisplayName("Update (PATCH) account preferences.")
+    public void testUpdateAccountPreferencesPatch() throws Exception {
+
+        String languageCode = "en-us";
+        String currencyCode = "USD";
+        String timeZone = "America/New_York";
+
+        AccountPreferencesResponseDto responseDto = new AccountPreferencesResponseDto(
+                publicId,
+                languageCode,
+                currencyCode,
+                timeZone
+        );
+
+        AccountPreferencesPatchDto patchDto = new AccountPreferencesPatchDto(
+                languageCode,
+                currencyCode,
+                timeZone
+        );
+
+        when(accountService.updateAccountPreferencesByPublicIdPatch(
+                any(UUID.class), any(AccountPreferencesPatchDto.class)
+        )).thenReturn(responseDto);
+
+        mockMvc.perform(patch("/api/v1/accounts/{publicId}/preferences", publicId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(patchDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.message").value("Account preferences updated successfully."))
+                .andExpect(jsonPath("$.data.publicId").value(publicId.toString()))
+                .andExpect(jsonPath("$.data.language").value(languageCode))
+                .andExpect(jsonPath("$.data.currency").value(currencyCode))
+                .andExpect(jsonPath("$.data.timeZone").value(timeZone));
     }
 }
