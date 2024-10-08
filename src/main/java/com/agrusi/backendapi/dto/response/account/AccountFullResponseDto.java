@@ -8,7 +8,7 @@ public record AccountFullResponseDto(
         String email,
         String firstName,
         String lastName,
-        boolean accountVerified,
+        boolean emailVerified,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) { }
