@@ -212,12 +212,14 @@ class AccountControllerUnitTest {
         String languageCode = "fi";
         String currencyCode = "EUR";
         String timeZone = "Europe/Helsinki";
+        String measurementSystem = "metric";
 
         AccountPreferencesResponseDto responseDto = new AccountPreferencesResponseDto(
                 publicId,
                 languageCode,
                 currencyCode,
-                timeZone
+                timeZone,
+                measurementSystem
         );
 
         when(accountService.getAccountPreferencesByPublicId(publicId)).thenReturn(
@@ -231,7 +233,8 @@ class AccountControllerUnitTest {
                 .andExpect(jsonPath("$.data.publicId").value(publicId.toString()))
                 .andExpect(jsonPath("$.data.language").value(languageCode))
                 .andExpect(jsonPath("$.data.currency").value(currencyCode))
-                .andExpect(jsonPath("$.data.timeZone").value(timeZone));
+                .andExpect(jsonPath("$.data.timeZone").value(timeZone))
+                .andExpect(jsonPath("$.data.measurementSystem").value(measurementSystem));
     }
 
     @Test
@@ -241,18 +244,21 @@ class AccountControllerUnitTest {
         String languageCode = "en-us";
         String currencyCode = "USD";
         String timeZone = "America/New_York";
+        String measurementSystem = "metric";
 
         AccountPreferencesResponseDto responseDto = new AccountPreferencesResponseDto(
                 publicId,
                 languageCode,
                 currencyCode,
-                timeZone
+                timeZone,
+                measurementSystem
         );
 
         AccountPreferencesPatchDto patchDto = new AccountPreferencesPatchDto(
                 languageCode,
                 currencyCode,
-                timeZone
+                timeZone,
+                measurementSystem
         );
 
         when(accountService.updateAccountPreferencesByPublicIdPatch(
@@ -268,6 +274,7 @@ class AccountControllerUnitTest {
                 .andExpect(jsonPath("$.data.publicId").value(publicId.toString()))
                 .andExpect(jsonPath("$.data.language").value(languageCode))
                 .andExpect(jsonPath("$.data.currency").value(currencyCode))
-                .andExpect(jsonPath("$.data.timeZone").value(timeZone));
+                .andExpect(jsonPath("$.data.timeZone").value(timeZone))
+                .andExpect(jsonPath("$.data.measurementSystem").value(measurementSystem));
     }
 }
