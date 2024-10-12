@@ -1,10 +1,8 @@
 package com.agrusi.backendapi.controller;
 
 import com.agrusi.backendapi.dto.request.account.AccountPatchGeneralDto;
-import com.agrusi.backendapi.dto.request.account.AccountPreferencesPatchDto;
 import com.agrusi.backendapi.dto.response.account.AccountBasicResponseDto;
 import com.agrusi.backendapi.dto.response.account.AccountFullResponseDto;
-import com.agrusi.backendapi.dto.response.account.AccountPreferencesResponseDto;
 import com.agrusi.backendapi.handler.ResponseHandler;
 import com.agrusi.backendapi.service.AccountService;
 import jakarta.validation.Valid;
@@ -62,38 +60,6 @@ public class AccountController {
                 HttpStatus.OK,
                 "Account deleted successfully.",
                 Map.of("publicId", publicId)
-        );
-    }
-
-    // Get (GET) Account Preferences
-
-    @GetMapping(value = "/{publicId}/preferences")
-    public ResponseEntity<?> getAccountPreferences(@PathVariable UUID publicId) {
-
-        AccountPreferencesResponseDto account =
-                accountService.getAccountPreferencesByPublicId(publicId);
-
-        return ResponseHandler.generateSuccessResponse(
-                HttpStatus.OK,
-                "Account preferences fetched successfully.",
-                account
-        );
-    }
-
-    // Update (PATCH) Account Preferences
-
-    @PatchMapping(value = "/{publicId}/preferences")
-    public ResponseEntity<?> updateAccountPreferencesPatch(
-            @PathVariable UUID publicId,
-            @Valid @RequestBody AccountPreferencesPatchDto updateDto
-    ) {
-        AccountPreferencesResponseDto accountPreferences =
-                accountService.updateAccountPreferencesByPublicIdPatch(publicId, updateDto);
-
-        return ResponseHandler.generateSuccessResponse(
-                HttpStatus.OK,
-                "Account preferences updated successfully.",
-                accountPreferences
         );
     }
 }
