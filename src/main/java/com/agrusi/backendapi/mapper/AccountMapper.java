@@ -2,7 +2,6 @@ package com.agrusi.backendapi.mapper;
 
 import com.agrusi.backendapi.dto.response.account.AccountBasicResponseDto;
 import com.agrusi.backendapi.dto.response.account.AccountFullResponseDto;
-import com.agrusi.backendapi.dto.response.account.AccountPreferencesResponseDto;
 import com.agrusi.backendapi.dto.response.auth.AccountRegistrationResponseDto;
 import com.agrusi.backendapi.model.Account;
 import org.mapstruct.Mapper;
@@ -23,9 +22,4 @@ public interface AccountMapper {
     AccountFullResponseDto toAccountFullResponseDto(Account account);
 
     AccountBasicResponseDto toAccountBasicResponseDto(Account account);
-
-    @Mapping(source = "accountPreferences.language", target = "language")
-    @Mapping(source = "accountPreferences.currency", target = "currency")
-    @Mapping(source = "accountPreferences.timeZone", target = "timeZone")
-    AccountPreferencesResponseDto toAccountPreferencesResponseDto(Account account);
 }
