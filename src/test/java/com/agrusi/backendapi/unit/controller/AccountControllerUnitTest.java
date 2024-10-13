@@ -166,8 +166,8 @@ class AccountControllerUnitTest {
         AccountPatchGeneralDto invalidUpdateDto = new AccountPatchGeneralDto(
                 "J",
                 "R",
-                null,
-                "+358501234567"
+                "invalidemail.com",
+                "+3580"
         );
 
         // No need to use "when", because this test is designed to check the
@@ -181,11 +181,12 @@ class AccountControllerUnitTest {
                 .andExpect(jsonPath("$.message").value("Validation failed"))
                 .andExpect(jsonPath("$.errors").isArray())
 
-                // Should contain validation errors for both fields,
-                // because the names are too short...
+                // Should contain validation errors for all fields...
 
                 .andExpect(jsonPath("$.errors[0].field").exists())
-                .andExpect(jsonPath("$.errors[1].field").exists());
+                .andExpect(jsonPath("$.errors[1].field").exists())
+                .andExpect(jsonPath("$.errors[2].field").exists())
+                .andExpect(jsonPath("$.errors[3].field").exists());
 
         verify(accountService, never()).updateAccountBasicInfoByPublicIdPatch(any(UUID.class), any(AccountPatchGeneralDto.class));
     }
@@ -202,77 +203,4 @@ class AccountControllerUnitTest {
                 .andExpect(jsonPath("$.message").value("Account deleted successfully."))
                 .andExpect(jsonPath("$.data.publicId").value(publicId.toString()));
     }
-
-//    @Test
-//    @DisplayName("Get account preferences.")
-//    public void testGetAccountPreferences() throws Exception {
-//
-//        String languageCode = "fi";
-//        String currencyCode = "EUR";
-//        String timeZone = "Europe/Helsinki";
-//        String measurementSystem = "metric";
-//
-//        AccountPreferencesResponseDto responseDto = new AccountPreferencesResponseDto(
-//                publicId,
-//                languageCode,
-//                currencyCode,
-//                timeZone,
-//                measurementSystem
-//        );
-//
-//        when(accountService.getAccountPreferencesByPublicId(publicId)).thenReturn(
-//                responseDto
-//        );
-//
-//        mockMvc.perform(get("/api/v1/accounts/{publicId}/preferences", publicId))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.status").value("success"))
-//                .andExpect(jsonPath("$.message").value("Account preferences fetched successfully."))
-//                .andExpect(jsonPath("$.data.publicId").value(publicId.toString()))
-//                .andExpect(jsonPath("$.data.language").value(languageCode))
-//                .andExpect(jsonPath("$.data.currency").value(currencyCode))
-//                .andExpect(jsonPath("$.data.timeZone").value(timeZone))
-//                .andExpect(jsonPath("$.data.fieldAreaUnit").value(measurementSystem));
-//    }
-
-//    @Test
-//    @DisplayName("Update (PATCH) account preferences.")
-//    public void testUpdateAccountPreferencesPatch() throws Exception {
-//
-//        String languageCode = "en-us";
-//        String currencyCode = "USD";
-//        String timeZone = "America/New_York";
-//        String measurementSystem = "metric";
-//
-//        AccountPreferencesResponseDto responseDto = new AccountPreferencesResponseDto(
-//                publicId,
-//                languageCode,
-//                currencyCode,
-//                timeZone,
-//                measurementSystem
-//        );
-//
-//        AccountPreferencesPatchDto patchDto = new AccountPreferencesPatchDto(
-//                languageCode,
-//                currencyCode,
-//                timeZone,
-//                measurementSystem
-//        );
-//
-//        when(accountService.updateAccountPreferencesByPublicIdPatch(
-//                any(UUID.class), any(AccountPreferencesPatchDto.class)
-//        )).thenReturn(responseDto);
-//
-//        mockMvc.perform(patch("/api/v1/accounts/{publicId}/preferences", publicId)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(patchDto)))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.status").value("success"))
-//                .andExpect(jsonPath("$.message").value("Account preferences updated successfully."))
-//                .andExpect(jsonPath("$.data.publicId").value(publicId.toString()))
-//                .andExpect(jsonPath("$.data.language").value(languageCode))
-//                .andExpect(jsonPath("$.data.currency").value(currencyCode))
-//                .andExpect(jsonPath("$.data.timeZone").value(timeZone))
-//                .andExpect(jsonPath("$.data.fieldAreaUnit").value(measurementSystem));
-//    }
 }
