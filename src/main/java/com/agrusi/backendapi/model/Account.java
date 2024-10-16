@@ -9,7 +9,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity(name = "account")
 @Table(name = "account")
@@ -84,7 +87,7 @@ public class Account {
             mappedBy = "account", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true
     )
-    private List<UserAddress> addresses = new ArrayList<>();
+    private Set<Address> addresses = new HashSet<>();
 
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified = false;
@@ -253,11 +256,11 @@ public class Account {
         this.accountPreferences = accountPreferences;
     }
 
-    public List<UserAddress> getAddresses() {
+    public Set<Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(List<UserAddress> addresses) {
+    public void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
     }
 
