@@ -7,5 +7,5 @@ public record AccountRegistrationResponseDto(
         String email,
         String firstName,
         String lastName,
-        boolean accountVerified
+        boolean emailVerified
 ) { }
