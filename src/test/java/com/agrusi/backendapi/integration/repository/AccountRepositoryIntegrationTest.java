@@ -30,14 +30,25 @@ public class AccountRepositoryIntegrationTest {
 
     private Account account;
 
+    private String existingEmail;
+
+    private String nonExistingEmail;
+
     @BeforeEach
     public void setUp() {
 
+        existingEmail = "jack.farmer@example.com";
+        String firstName = "Jack";
+        String lastName = "Farmer";
+        String password = "password123";
+
+        nonExistingEmail = "nonexistent@example.com";
+
         account = new Account();
-        account.setFirstName("Jack");
-        account.setLastName("Farmer");
-        account.setEmail("jack.farmer@example.com");
-        account.setPassword("password123");
+        account.setFirstName(firstName);
+        account.setLastName(lastName);
+        account.setEmail(existingEmail);
+        account.setPassword(password);
 
         accountRepository.save(account);
     }
@@ -46,7 +57,7 @@ public class AccountRepositoryIntegrationTest {
     @DisplayName("Get an account by email.")
     public void testFindAccountByEmail() {
 
-        Optional<Account> foundAccount = accountRepository.findAccountByEmail("jack.farmer@example.com");
+        Optional<Account> foundAccount = accountRepository.findAccountByEmail(existingEmail);
 
         assertTrue(foundAccount.isPresent());
         assertEquals(account.getEmail(), foundAccount.get().getEmail());
@@ -56,7 +67,7 @@ public class AccountRepositoryIntegrationTest {
     @DisplayName("Account not found by email.")
     public void testFindAccountByEmail_NotFound() {
 
-        Optional<Account> foundAccount = accountRepository.findAccountByEmail("nonexistent@example.com");
+        Optional<Account> foundAccount = accountRepository.findAccountByEmail(nonExistingEmail);
 
         assertTrue(foundAccount.isEmpty());
     }
@@ -84,7 +95,7 @@ public class AccountRepositoryIntegrationTest {
     @DisplayName("Account exists by email.")
     public void testExistsByEmail() {
 
-        Boolean exists = accountRepository.existsByEmail("jack.farmer@example.com");
+        Boolean exists = accountRepository.existsByEmail(existingEmail);
 
         assertTrue(exists);
     }
@@ -93,7 +104,7 @@ public class AccountRepositoryIntegrationTest {
     @DisplayName("Account doesn't exists by email")
     public void testExistsByEmail_NonExistingAccount() {
 
-        Boolean exists = accountRepository.existsByEmail("nonexistent@example.com");
+        Boolean exists = accountRepository.existsByEmail(nonExistingEmail);
 
         assertFalse(exists);
     }
