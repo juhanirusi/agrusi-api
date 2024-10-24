@@ -1,6 +1,6 @@
 package com.agrusi.backendapi.service.impl;
 
-import com.agrusi.backendapi.dto.request.account.AccountPutGeneralDto;
+import com.agrusi.backendapi.dto.request.account.AccountPatchGeneralDto;
 import com.agrusi.backendapi.dto.response.account.AccountBasicResponseDto;
 import com.agrusi.backendapi.dto.response.account.AccountFullResponseDto;
 import com.agrusi.backendapi.exception.account.AccountWithPublicIdNotFoundException;
@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,15 +42,20 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountBasicResponseDto updateAccountBasicInfoByPublicIdPut(
+    public AccountBasicResponseDto updateAccountBasicInfoByPublicIdPatch(
             UUID publicId,
-            AccountPutGeneralDto updateDto
+            AccountPatchGeneralDto updateDto
     ) {
         Account account = accountRepository.findAccountByPublicId(publicId)
                 .orElseThrow(() -> new AccountWithPublicIdNotFoundException(publicId));
 
-        account.setFirstName(updateDto.getFirstName());
-        account.setLastName(updateDto.getLastName());
+        // Use Optional to avoid null checks
+        Optional.ofNullable(updateDto.getFirstName()).ifPresent(account::setFirstName);
+        Optional.ofNullable(updateDto.getLastName()).ifPresent(account::setLastName);
+        Optional.ofNullable(updateDto.getEmail()).ifPresent(account::setEmail);
+        Optional.ofNullable(updateDto.getPhoneNumber()).ifPresent(account::setPhoneNumber);
+
+        accountRepository.save(account);
 
         return accountMapper.toAccountBasicResponseDto(account);
     }
