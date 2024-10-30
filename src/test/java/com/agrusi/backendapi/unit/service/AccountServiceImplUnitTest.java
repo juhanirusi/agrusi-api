@@ -1,12 +1,14 @@
 package com.agrusi.backendapi.unit.service;
 
 import com.agrusi.backendapi.UnitTest;
-import com.agrusi.backendapi.dto.request.account.AccountPutGeneralDto;
+import com.agrusi.backendapi.dto.request.account.AccountPatchGeneralDto;
 import com.agrusi.backendapi.dto.response.account.AccountBasicResponseDto;
 import com.agrusi.backendapi.dto.response.account.AccountFullResponseDto;
+import com.agrusi.backendapi.enums.EAreaUnit;
 import com.agrusi.backendapi.exception.account.AccountWithPublicIdNotFoundException;
 import com.agrusi.backendapi.mapper.AccountMapper;
 import com.agrusi.backendapi.model.Account;
+import com.agrusi.backendapi.model.AccountPreferences;
 import com.agrusi.backendapi.repository.AccountRepository;
 import com.agrusi.backendapi.service.impl.AccountServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +27,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /*
  * @UnitTest --> Our custom annotation allowing us to run only
@@ -54,7 +57,7 @@ public class AccountServiceImplUnitTest {
     private UUID publicId;
     private Account account;
 
-    private AccountPutGeneralDto accountPutGeneralDto;
+    private AccountPatchGeneralDto accountPatchGeneralDto;
 
     private AccountFullResponseDto expectedAccountFullResponseDto;
     private AccountBasicResponseDto expectedAccountBasicResponseDto;
@@ -70,10 +73,20 @@ public class AccountServiceImplUnitTest {
         account.setLastName("Farmer");
         account.setEmail("jack.farmer@example.com");
 
-        accountPutGeneralDto = new AccountPutGeneralDto(
-                "Jane",
-                "Rancher"
-        );
+        AccountPreferences accountPreferences = new AccountPreferences();
+        accountPreferences.setAccount(account);
+        accountPreferences.setLanguage("fi");
+        accountPreferences.setCurrency("EUR");
+        accountPreferences.setTimeZone("Europe/Helsinki");
+        accountPreferences.setFieldAreaUnit(EAreaUnit.HECTARE);
+
+        account.setAccountPreferences(accountPreferences);
+
+        accountPatchGeneralDto = new AccountPatchGeneralDto();
+        accountPatchGeneralDto.setFirstName("Jane");
+        accountPatchGeneralDto.setLastName("Rancher");
+        accountPatchGeneralDto.setEmail(null);
+        accountPatchGeneralDto.setPhoneNumber(null);
 
         expectedAccountFullResponseDto = new AccountFullResponseDto(
                 publicId,
@@ -88,6 +101,7 @@ public class AccountServiceImplUnitTest {
         expectedAccountBasicResponseDto = new AccountBasicResponseDto(
                 publicId,
                 "jack.farmer@example.com",
+                "+358123456789",
                 "Jane",
                 "Rancher",
                 true
@@ -125,7 +139,9 @@ public class AccountServiceImplUnitTest {
         when(accountRepository.findAccountByPublicId(publicId)).thenReturn(Optional.of(account));
         when(accountMapper.toAccountBasicResponseDto(account)).thenReturn(expectedAccountBasicResponseDto);
 
-        AccountBasicResponseDto responseDto = accountService.updateAccountBasicInfoByPublicIdPut(publicId, accountPutGeneralDto);
+        AccountBasicResponseDto responseDto = accountService.updateAccountBasicInfoByPublicIdPatch(
+                publicId, accountPatchGeneralDto
+        );
 
         // Check that the response contains correct data...
         assertNotNull(responseDto);
