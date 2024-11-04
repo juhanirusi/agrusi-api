@@ -1,8 +1,9 @@
 package com.agrusi.backendapi.unit.model;
 
 import com.agrusi.backendapi.UnitTest;
-import com.agrusi.backendapi.model.Account;
-import com.agrusi.backendapi.model.UserAddress;
+import com.agrusi.backendapi.enums.EAddressType;
+import com.agrusi.backendapi.enums.EAreaUnit;
+import com.agrusi.backendapi.model.*;
 import com.agrusi.backendapi.unit.util.ReflectionTestUtils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -11,7 +12,6 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.*;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -154,38 +154,77 @@ public class AccountUnitTest {
         @DisplayName("Test creating a new user account.")
         public void testAccountCreation() {
 
-            account.setFirstName("Jack");
-            account.setLastName("Farmer");
-            account.setEmail("jack.farmer@example.com");
-            account.setPassword("password123");
+            // Arrange: Set up the account entity with expected values
 
-            UserAddress exampleAddress = new UserAddress(
+            String firstName = "Jack";
+            String lastName = "Farmer";
+            String email = "jack.farmer@example.com";
+            String password = "password123";
+
+            String languagePreference = "fi";
+            String currencyPreference = "EUR";
+            String timeZonePreference = "Europe/Helsinki";
+            EAreaUnit fieldAreaUnit = EAreaUnit.HECTARE;
+
+            account.setFirstName(firstName);
+            account.setLastName(lastName);
+            account.setEmail(email);
+            account.setPassword(password);
+
+            UserProfile userProfile = new UserProfile(
+                    1L,
+                    account
+            );
+
+            AccountPreferences accountPreferences = new AccountPreferences();
+            accountPreferences.setAccount(account);
+            accountPreferences.setLanguage(languagePreference);
+            accountPreferences.setCurrency(currencyPreference);
+            accountPreferences.setTimeZone(timeZonePreference);
+            accountPreferences.setFieldAreaUnit(fieldAreaUnit);
+
+            Set<EAddressType> addressTypes = Set.of(EAddressType.HOME);
+
+            Address exampleAddress = new Address(
                     1L,
                     "My Street 123",
                     "Kingston",
                     "New York",
                     "12401",
                     "United States",
+                    account,
                     true,
-                    account
+                    addressTypes
             );
 
-            List<UserAddress> addresses = List.of(exampleAddress);
-            account.setAddresses(addresses);
+            Set<Address> addresses = Set.of(exampleAddress);
 
+            account.setUserProfile(userProfile);
+            account.setAccountPreferences(accountPreferences);
+            account.setAddresses(addresses);
             account.setAuthorities(new HashSet<>());
 
             assertAll(
                     "Grouped assertions of Account",
                     () -> assertEquals(1L, account.getId()),
                     () -> assertEquals(UUID.fromString("123e4567-e89b-12d3-a456-556642440000"), account.getPublicId()),
-                    () -> assertEquals("Jack", account.getFirstName()),
-                    () -> assertEquals("Farmer", account.getLastName()),
-                    () -> assertEquals("jack.farmer@example.com", account.getEmail()),
-                    () -> assertEquals("password123", account.getPassword()),
+                    () -> assertEquals(firstName, account.getFirstName()),
+                    () -> assertEquals(lastName, account.getLastName()),
+                    () -> assertEquals(email, account.getEmail()),
+                    () -> assertEquals(password, account.getPassword()),
+
+                    () -> assertEquals(account, account.getUserProfile().getAccount()),
+
+                    () -> assertEquals(account, account.getAccountPreferences().getAccount()),
+                    () -> assertEquals(languagePreference, account.getAccountPreferences().getLanguage()),
+                    () -> assertEquals(currencyPreference, account.getAccountPreferences().getCurrency()),
+                    () -> assertEquals(timeZonePreference, account.getAccountPreferences().getTimeZone()),
+                    () -> assertEquals(fieldAreaUnit.getUnitOfArea(), account.getAccountPreferences().getFieldAreaUnit().getUnitOfArea()),
+
                     () -> assertTrue(account.getAddresses().contains(exampleAddress)),
+
                     () -> assertTrue(account.getAuthorities().isEmpty()),
-                    () -> assertFalse(account.isVerified())
+                    () -> assertFalse(account.isEmailVerified())
             );
         }
 
