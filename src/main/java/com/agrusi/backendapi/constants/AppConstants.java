@@ -13,7 +13,8 @@ public interface AppConstants {
      * and we'll use that token to make sure that the user is
      * authorized to view some page
      */
-    public static final String AGRUSI_URL = "https://agrusi.com";
+
+    String AGRUSI_URL = "https://agrusi.com";
 
 //    public static final String JWT_KEY = "mY_AmAzInG_AnD_SuPeR_SeCrEt_jWt_kEy";
 //    public static final String JWT_HEADER = "Authorization";
