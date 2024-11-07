@@ -23,10 +23,10 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping(value = "/{publicId}")
-    public ResponseEntity<?> getAccount(@PathVariable UUID publicId) {
+    @GetMapping(value = "/{accountPublicId}")
+    public ResponseEntity<?> getAccount(@PathVariable UUID accountPublicId) {
 
-        AccountFullResponseDto account = accountService.getAccountByPublicId(publicId);
+        AccountFullResponseDto account = accountService.getAccountByPublicId(accountPublicId);
 
         return ResponseHandler.generateSuccessResponse(
                 HttpStatus.OK,
@@ -35,13 +35,13 @@ public class AccountController {
         );
     }
 
-    @PatchMapping(value = "/{publicId}")
+    @PatchMapping(value = "/{accountPublicId}")
     public ResponseEntity<?> updateAccountBasicInfoPatch(
-            @PathVariable UUID publicId,
+            @PathVariable UUID accountPublicId,
             @Valid @RequestBody AccountPatchGeneralDto updateDto
     ) {
         AccountBasicResponseDto account = accountService.updateAccountBasicInfoByPublicIdPatch(
-                publicId, updateDto
+                accountPublicId, updateDto
         );
 
         return ResponseHandler.generateSuccessResponse(
@@ -51,15 +51,15 @@ public class AccountController {
         );
     }
 
-    @DeleteMapping(value = "/{publicId}")
-    public ResponseEntity<?> deleteAccount(@PathVariable UUID publicId) {
+    @DeleteMapping(value = "/{accountPublicId}")
+    public ResponseEntity<?> deleteAccount(@PathVariable UUID accountPublicId) {
 
-        accountService.deleteAccountByPublicId(publicId);
+        accountService.deleteAccountByPublicId(accountPublicId);
 
         return ResponseHandler.generateSuccessResponse(
                 HttpStatus.OK,
                 "Account deleted successfully.",
-                Map.of("publicId", publicId)
+                Map.of("publicId", accountPublicId)
         );
     }
 }
