@@ -17,17 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 
-// TODO --------------------------------------------------------------------|
-// TODO --> IMPLEMENT CACHING TO SAVE THE AccountPreferences INTO CACHE !!! |
-// TODO --------------------------------------------------------------------|
-
 @Service
 @Transactional(readOnly = true)
 public class AccountPreferencesServiceImpl implements AccountPreferencesService {
 
     private final AccountRepository accountRepository;
     private final AccountPreferencesMapper accountPreferencesMapper;
-//    private final CacheManager cacheManager;
 
     public AccountPreferencesServiceImpl(
             AccountRepository accountRepository,
@@ -36,10 +31,6 @@ public class AccountPreferencesServiceImpl implements AccountPreferencesService 
         this.accountRepository = accountRepository;
         this.accountPreferencesMapper = accountPreferencesMapper;
     }
-
-    //    public AccountPreferences getAccountPreferences(UUID accountId) {
-//        return cacheManager.getCache("accountPreferences").get(accountId, AccountPreferences.class);
-//    }
 
     @Override
     public AccountPreferences fetchAccountPreferencesByAccountPublicId(
@@ -78,17 +69,8 @@ public class AccountPreferencesServiceImpl implements AccountPreferencesService 
 
         accountRepository.save(account);
 
-        // Reload UserDetails and update the SecurityContext
-//        reloadUserDetailsInSecurityContext(account.getEmail());
-
         return accountPreferencesMapper.toAccountPreferencesResponseDto(account);
     }
-
-//    public AccountPreferences updateAndCachePreferences(UUID accountId, AccountPreferences updatedPreferences) {
-//        accountRepository.save(updatedPreferences); // save to database
-//        cacheManager.getCache("accountPreferences").put(accountId, updatedPreferences); // update cache
-//        return updatedPreferences;
-//    }
 
     // Get current user's account preferences...
 

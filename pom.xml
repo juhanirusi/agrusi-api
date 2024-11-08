@@ -18,7 +18,7 @@
 	<description>The backend REST API for Agrusi.</description>
 	<inceptionYear>2024</inceptionYear>
 
-	<url>http://agrusi.com</url> <!-- REMEMBER TO CHANGE THIS !!! -->
+	<url>http://agrusi.com</url>
 
 	<developers>
 
@@ -41,11 +41,6 @@
 
 		<java.version>21</java.version>
 
-		<!-- Databases -->
-
-		<postgresql.version>42.7.3</postgresql.version>
-		<h2database.version>2.3.230</h2database.version>
-
 		<passay.version>1.6.4</passay.version>
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 		<spring-boot-maven.version>3.2.3</spring-boot-maven.version>
@@ -55,11 +50,20 @@
 		<jts.version>1.19.0</jts.version>
 		<maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
 
+		<!-- Databases -->
+
+		<postgresql.version>42.7.3</postgresql.version>
+		<h2database.version>2.3.230</h2database.version>
+
 		<!-- GeoTools -->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<geotools.version>31.1</geotools.version>
 		<maven.deploy.skip>true</maven.deploy.skip>
+
+		<!-- Google -->
+
+		<libphonenumber-validator.version>8.13.47</libphonenumber-validator.version>
 
 	</properties>
 
@@ -69,11 +73,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-jdbc</artifactId>-->
-<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -214,6 +213,14 @@
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct-processor</artifactId>
 			<version>${mapstruct.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber -->
+
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<version>${libphonenumber-validator.version}</version>
 		</dependency>
 
 	</dependencies>

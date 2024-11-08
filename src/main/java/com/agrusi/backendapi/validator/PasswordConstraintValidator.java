@@ -21,7 +21,7 @@ public class PasswordConstraintValidator implements
 
         // If the password field is null or non-existent in the JSON payload...
         if (password == null) {
-            return false;
+            return true;
         }
 
         PasswordValidator validator = new PasswordValidator(Arrays.asList(

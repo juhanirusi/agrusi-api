@@ -14,8 +14,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -182,47 +180,5 @@ public class FieldUnitTest {
             reflectionTestUtils.setField(farm1, "publicId", UUID.fromString("a4ff504a-77b8-4983-9cc1-31de712b7eb8"));
             assertNotEquals(field.hashCode(), field2.hashCode());
         }
-    }
-
-    @Test
-    @DisplayName("Test getting area size in hectares.")
-    public void testGetAreaSizeInHectares() {
-
-        field.setSize(BigDecimal.valueOf(100_000)); // 100,000 square meters
-
-        assertEquals(
-                BigDecimal.valueOf(10).setScale(2, RoundingMode.HALF_UP),
-                field.getAreaSizeInHectares()
-        );
-
-        // Let's double-check...
-
-        field.setSize(BigDecimal.valueOf(123));
-
-        assertEquals(
-                BigDecimal.valueOf(0.01).setScale(2, RoundingMode.HALF_UP),
-                field.getAreaSizeInHectares()
-        );
-    }
-
-    @Test
-    @DisplayName("Test getting area size in acres.")
-    public void testGetAreaSizeInAcres() {
-
-        field.setSize(BigDecimal.valueOf(100_000));
-
-        assertEquals(
-                BigDecimal.valueOf(24.71).setScale(2, RoundingMode.HALF_UP),
-                field.getAreaSizeInAcres()
-        );
-
-        // Let's double-check...
-
-        field.setSize(BigDecimal.valueOf(123));
-
-        assertEquals(
-                BigDecimal.valueOf(0.03).setScale(2, RoundingMode.HALF_UP),
-                field.getAreaSizeInAcres()
-        );
     }
 }

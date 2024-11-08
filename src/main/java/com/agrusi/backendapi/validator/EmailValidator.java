@@ -20,9 +20,17 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
 
-        // If the email field is null or non-existent in the JSON payload...
+        // Allow null (field not provided), but reject empty strings.
+        // This is done because PATCH requests allow non-existent fields,
+        // but we don't want to allow the consumer of the API to input empty
+        // strings on other request types!
+
         if (email == null) {
-            return false;
+            return true; // Field not provided, skip validation
+        }
+
+        if (email.isEmpty()) {
+            return false; // Reject empty strings
         }
 
         Matcher matcher = pattern.matcher(email);

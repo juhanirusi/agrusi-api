@@ -1,5 +1,6 @@
 package com.agrusi.backendapi.model;
 
+import com.agrusi.backendapi.enums.EFarmType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
@@ -36,6 +37,17 @@ public class Farm {
     @Column(name = "name", nullable = false)
     private String name;
 
+    // Collection of different farm types the farm belongs to...
+
+    @ElementCollection(targetClass = EFarmType.class)
+    @CollectionTable(
+            name = "farm_types", // old --> farm_farm_type
+            joinColumns = @JoinColumn(name = "farm_id")
+    )
+    @Enumerated(EnumType.STRING)
+    @Column(name = "farm_type")
+    private Set<EFarmType> farmTypes = new HashSet<>();
+
     // mappedBy = "farm", because "Farm" is the owning entity !!!
 
     @OneToMany(
@@ -43,6 +55,14 @@ public class Farm {
             cascade = CascadeType.ALL, orphanRemoval = true
     )
     private Set<Field> fields = new HashSet<>();
+
+    // mappedBy = "farm", because "Farm" is the owning entity !!!
+
+    @OneToMany(
+            mappedBy = "farm", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true
+    )
+    private Set<Address> addresses = new HashSet<>();
 
     @CreationTimestamp
     @Column(name = "date_created", updatable = false)
@@ -61,6 +81,24 @@ public class Farm {
     }
 
     public Farm() {
+    }
+
+    public Farm(
+            Long id,
+            UUID publicId,
+            String name,
+            Set<Field> fields,
+            Set<Address> addresses,
+            LocalDateTime dateCreated,
+            LocalDateTime lastUpdated
+    ) {
+        this.id = id;
+        this.publicId = publicId;
+        this.name = name;
+        this.fields = fields;
+        this.addresses = addresses;
+        this.dateCreated = dateCreated;
+        this.lastUpdated = lastUpdated;
     }
 
     public Farm(
@@ -113,12 +151,28 @@ public class Farm {
         this.name = name;
     }
 
+    public Set<EFarmType> getFarmTypes() {
+        return farmTypes;
+    }
+
+    public void setFarmTypes(Set<EFarmType> farmTypes) {
+        this.farmTypes = farmTypes;
+    }
+
     public Set<Field> getFields() {
         return fields;
     }
 
     public void setFields(Set<Field> fields) {
         this.fields = fields;
+    }
+
+    public Set<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(Set<Address> addresses) {
+        this.addresses = addresses;
     }
 
     public LocalDateTime getDateCreated() {

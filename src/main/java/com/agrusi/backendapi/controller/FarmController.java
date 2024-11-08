@@ -3,6 +3,7 @@ package com.agrusi.backendapi.controller;
 import com.agrusi.backendapi.dto.request.farm.FarmPatchDto;
 import com.agrusi.backendapi.dto.request.farm.FarmPostDto;
 import com.agrusi.backendapi.dto.response.farm.FarmResponseDto;
+import com.agrusi.backendapi.dto.response.farm.TotalFarmLandAreaResponseDto;
 import com.agrusi.backendapi.handler.ResponseHandler;
 import com.agrusi.backendapi.service.FarmService;
 import jakarta.validation.Valid;
@@ -23,15 +24,28 @@ public class FarmController {
         this.farmService = farmService;
     }
 
-    @GetMapping(value = "/{publicFarmId}")
-    public ResponseEntity<?> getFarm(@PathVariable UUID publicFarmId) {
+    @GetMapping(value = "/{farmPublicId}")
+    public ResponseEntity<?> getFarm(@PathVariable UUID farmPublicId) {
 
-        FarmResponseDto farm = farmService.getFarmByPublicId(publicFarmId);
+        FarmResponseDto farm = farmService.getFarmByPublicId(farmPublicId);
 
         return ResponseHandler.generateSuccessResponse(
                 HttpStatus.OK,
                 "Farm details fetched successfully.",
                 farm
+        );
+    }
+
+    @GetMapping(value = "/{farmPublicId}/total-land-area")
+    public ResponseEntity<?> getTotalFarmLandArea(@PathVariable UUID farmPublicId) {
+
+        TotalFarmLandAreaResponseDto farmLandAreaInfo =
+                farmService.getTotalLandAreaByFarmPublicId(farmPublicId);
+
+        return ResponseHandler.generateSuccessResponse(
+                HttpStatus.OK,
+                "Farm's total land area details fetched successfully.",
+                farmLandAreaInfo
         );
     }
 
@@ -47,13 +61,13 @@ public class FarmController {
         );
     }
 
-    @PatchMapping(value = "/{publicFarmId}")
+    @PatchMapping(value = "/{farmPublicId}")
     public ResponseEntity<?> updateFarmPatch(
-            @PathVariable UUID publicFarmId,
+            @PathVariable UUID farmPublicId,
             @Valid @RequestBody FarmPatchDto farmDto
     ) {
         FarmResponseDto farm = farmService.updateFarmByPublicIdPatch(
-                publicFarmId, farmDto
+                farmPublicId, farmDto
         );
 
         return ResponseHandler.generateSuccessResponse(
@@ -63,15 +77,15 @@ public class FarmController {
         );
     }
 
-    @DeleteMapping(value = "/{publicFarmId}")
-    public ResponseEntity<?> deleteFarm(@PathVariable UUID publicFarmId) {
+    @DeleteMapping(value = "/{farmPublicId}")
+    public ResponseEntity<?> deleteFarm(@PathVariable UUID farmPublicId) {
 
-        farmService.deleteFarmById(publicFarmId);
+        farmService.deleteFarmById(farmPublicId);
 
         return ResponseHandler.generateSuccessResponse(
                 HttpStatus.OK,
                 "Farm deleted successfully.",
-                Map.of("publicId", publicFarmId)
+                Map.of("publicId", farmPublicId)
         );
     }
 }

@@ -32,10 +32,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountFullResponseDto getAccountByPublicId(UUID publicId) {
+    public AccountFullResponseDto getAccountByPublicId(UUID accountPublicId) {
 
-        Account account = accountRepository.findAccountByPublicId(publicId)
-                .orElseThrow(() -> new AccountWithPublicIdNotFoundException(publicId));
+        Account account = accountRepository.findAccountByPublicId(accountPublicId)
+                .orElseThrow(() -> new AccountWithPublicIdNotFoundException(accountPublicId));
 
         return accountMapper.toAccountFullResponseDto(account);
     }
@@ -43,11 +43,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountBasicResponseDto updateAccountBasicInfoByPublicIdPatch(
-            UUID publicId,
+            UUID accountPublicId,
             AccountPatchGeneralDto updateDto
     ) {
-        Account account = accountRepository.findAccountByPublicId(publicId)
-                .orElseThrow(() -> new AccountWithPublicIdNotFoundException(publicId));
+        Account account = accountRepository.findAccountByPublicId(accountPublicId)
+                .orElseThrow(() -> new AccountWithPublicIdNotFoundException(accountPublicId));
 
         // Use Optional to avoid null checks
         Optional.ofNullable(updateDto.getFirstName()).ifPresent(account::setFirstName);
@@ -62,15 +62,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public void deleteAccountByPublicId(UUID publicId) {
+    public void deleteAccountByPublicId(UUID accountPublicId) {
 
-        Account account = accountRepository.findAccountByPublicId(publicId)
-                .orElseThrow(() -> new AccountWithPublicIdNotFoundException(publicId));
+        Account account = accountRepository.findAccountByPublicId(accountPublicId)
+                .orElseThrow(() -> new AccountWithPublicIdNotFoundException(accountPublicId));
 
         // Get currently authenticated user's email...
         Authentication authenticatedUser = SecurityContextHolder.getContext().getAuthentication();
-
-        // TODO --> IMPLEMENT "SecurityException" WHEN USER NOT ALLOWED TO DELETE ACCOUNT !!!
 
         // Check if the authenticated user is the owner of the account
         if (!account.getEmail().equals(authenticatedUser.getName())) { // Email in this case !!!

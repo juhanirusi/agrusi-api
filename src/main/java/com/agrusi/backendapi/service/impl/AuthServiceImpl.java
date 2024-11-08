@@ -5,10 +5,13 @@ import com.agrusi.backendapi.dto.request.auth.RegisterDto;
 import com.agrusi.backendapi.dto.response.auth.AccountRegistrationResponseDto;
 import com.agrusi.backendapi.dto.response.auth.LoginResponseDto;
 import com.agrusi.backendapi.enums.EAccountRole;
+import com.agrusi.backendapi.enums.EAreaUnit;
 import com.agrusi.backendapi.exception.auth.AccountWithEmailAlreadyExistException;
 import com.agrusi.backendapi.mapper.AccountMapper;
 import com.agrusi.backendapi.model.Account;
+import com.agrusi.backendapi.model.AccountPreferences;
 import com.agrusi.backendapi.model.Role;
+import com.agrusi.backendapi.model.UserProfile;
 import com.agrusi.backendapi.repository.AccountRepository;
 import com.agrusi.backendapi.repository.RoleRepository;
 import com.agrusi.backendapi.security.service.TokenService;
@@ -58,6 +61,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Account account = new Account();
+        UserProfile userProfile = new UserProfile();
+        AccountPreferences accountPreferences = new AccountPreferences();
 
         Role userRole = roleRepository.findByAuthority(EAccountRole.USER)
                 .orElseThrow(() -> new RuntimeException("Role not found."));
@@ -67,6 +72,16 @@ public class AuthServiceImpl implements AuthService {
         account.setEmail(registerDto.getEmail());
         account.setPassword(passwordEncoder.encode(registerDto.getPassword()));
         account.setAuthorities(Set.of(userRole));
+        account.setUserProfile(userProfile);
+        account.setAccountPreferences(accountPreferences);
+
+        userProfile.setAccount(account);
+
+        accountPreferences.setAccount(account);
+        accountPreferences.setLanguage(registerDto.getLanguage());
+        accountPreferences.setCurrency(registerDto.getCurrency());
+        accountPreferences.setTimeZone(registerDto.getTimeZone());
+        accountPreferences.setFieldAreaUnit(EAreaUnit.valueOf(registerDto.getFieldAreaUnit().toUpperCase()));
 
         accountRepository.save(account);
 
@@ -86,11 +101,7 @@ public class AuthServiceImpl implements AuthService {
         System.out.printf(authentication.getAuthorities().toString());
 
         String token = tokenService.generateJwt(authentication);
-
-//        AuthUserDetails userDetails = (AuthUserDetails) authentication.getPrincipal();
-//
-//        System.out.printf(userDetails.getUsername());
-
+        
         return new LoginResponseDto(loginDto.getEmail(), token);
     }
 }

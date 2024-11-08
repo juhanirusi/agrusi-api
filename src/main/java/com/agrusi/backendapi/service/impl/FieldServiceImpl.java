@@ -3,15 +3,16 @@ package com.agrusi.backendapi.service.impl;
 import com.agrusi.backendapi.dto.request.field.FieldPostDto;
 import com.agrusi.backendapi.dto.request.field.FieldPutDto;
 import com.agrusi.backendapi.dto.response.field.FieldResponseDto;
-import com.agrusi.backendapi.enums.EAreaUnit;
 import com.agrusi.backendapi.exception.farm.FarmNotFoundException;
 import com.agrusi.backendapi.exception.field.FieldNotFoundException;
 import com.agrusi.backendapi.mapper.FieldMapper;
+import com.agrusi.backendapi.model.AccountPreferences;
 import com.agrusi.backendapi.model.Farm;
 import com.agrusi.backendapi.model.Field;
 import com.agrusi.backendapi.repository.FarmRepository;
 import com.agrusi.backendapi.repository.FieldRepository;
 import com.agrusi.backendapi.service.FieldService;
+import com.agrusi.backendapi.service.conversion.UnitConversionService;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -33,39 +34,52 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class FieldServiceImpl implements FieldService {
 
-    private final FieldRepository fieldRepository;
+    private final AccountPreferencesServiceImpl accountPreferencesService;
+
     private final FarmRepository farmRepository;
+
+    private final FieldRepository fieldRepository;
     private final FieldMapper fieldMapper;
 
+    private final UnitConversionService unitConversionService;
+
     public FieldServiceImpl(
-            FieldRepository fieldRepository,
+            AccountPreferencesServiceImpl accountPreferencesService,
             FarmRepository farmRepository,
-            FieldMapper fieldMapper
+            FieldRepository fieldRepository,
+            FieldMapper fieldMapper,
+            UnitConversionService unitConversionService
     ) {
-        this.fieldRepository = fieldRepository;
+        this.accountPreferencesService = accountPreferencesService;
         this.farmRepository = farmRepository;
+        this.fieldRepository = fieldRepository;
         this.fieldMapper = fieldMapper;
+        this.unitConversionService = unitConversionService;
     }
 
     @Override
-    public FieldResponseDto getFieldByFieldId(UUID publicFarmId, Long fieldId) {
+    public FieldResponseDto getFieldByFieldId(UUID farmPublicId, Long fieldId) {
 
-        Farm farm = farmRepository.findByPublicId(publicFarmId)
-                .orElseThrow(() -> new FarmNotFoundException(publicFarmId));
+        Farm farm = farmRepository.findByPublicId(farmPublicId)
+                .orElseThrow(() -> new FarmNotFoundException(farmPublicId));
 
         Field field = fieldRepository.findByIdAndFarm(fieldId, farm)
-                .orElseThrow(() -> new FieldNotFoundException(fieldId, publicFarmId));
+                .orElseThrow(() -> new FieldNotFoundException(fieldId, farmPublicId));
 
-        return fieldMapper.toFieldResponseDto(field, EAreaUnit.HECTARE);
+        AccountPreferences accountPreferences = accountPreferencesService.getCurrentAuthenticatedUserPreferences();
+
+        return fieldMapper.toFieldResponseDto(
+                field, accountPreferences.getFieldAreaUnit(), unitConversionService
+        );
     }
 
     @Override
     @Transactional
-    public FieldResponseDto createNewField(UUID publicFarmId, FieldPostDto fieldPostDto)
+    public FieldResponseDto createNewField(UUID farmPublicId, FieldPostDto fieldPostDto)
             throws FactoryException, TransformException {
 
-        Farm farm = farmRepository.findByPublicId(publicFarmId)
-                    .orElseThrow(() -> new FarmNotFoundException(publicFarmId));
+        Farm farm = farmRepository.findByPublicId(farmPublicId)
+                    .orElseThrow(() -> new FarmNotFoundException(farmPublicId));
 
         Field newField = new Field();
 
@@ -77,20 +91,24 @@ public class FieldServiceImpl implements FieldService {
 
         fieldRepository.save(newField);
 
-        return fieldMapper.toFieldResponseDto(newField, EAreaUnit.HECTARE);
+        AccountPreferences accountPreferences = accountPreferencesService.getCurrentAuthenticatedUserPreferences();
+
+        return fieldMapper.toFieldResponseDto(
+                newField, accountPreferences.getFieldAreaUnit(), unitConversionService
+        );
     }
 
     @Override
     @Transactional
     public FieldResponseDto updateFieldByFieldIdPut(
-            UUID publicFarmId, Long fieldId, FieldPutDto fieldPutDto
+            UUID farmPublicId, Long fieldId, FieldPutDto fieldPutDto
     ) throws FactoryException, TransformException {
 
-        Farm farm = farmRepository.findByPublicId(publicFarmId)
-                .orElseThrow(() -> new FarmNotFoundException(publicFarmId));
+        Farm farm = farmRepository.findByPublicId(farmPublicId)
+                .orElseThrow(() -> new FarmNotFoundException(farmPublicId));
 
         Field field = fieldRepository.findByIdAndFarm(fieldId, farm)
-                .orElseThrow(() -> new FieldNotFoundException(fieldId, publicFarmId));
+                .orElseThrow(() -> new FieldNotFoundException(fieldId, farmPublicId));
 
         if (fieldPutDto.getName() != null) {
             field.setName(fieldPutDto.getName());
@@ -104,18 +122,22 @@ public class FieldServiceImpl implements FieldService {
 
         fieldRepository.save(field);
 
-        return fieldMapper.toFieldResponseDto(field, EAreaUnit.HECTARE);
+        AccountPreferences accountPreferences = accountPreferencesService.getCurrentAuthenticatedUserPreferences();
+
+        return fieldMapper.toFieldResponseDto(
+                field, accountPreferences.getFieldAreaUnit(), unitConversionService
+        );
     }
 
     @Override
     @Transactional
-    public void deleteFieldById(UUID publicFarmId, Long fieldId) {
+    public void deleteFieldById(UUID farmPublicId, Long fieldId) {
 
-        Farm farm = farmRepository.findByPublicId(publicFarmId)
-                .orElseThrow(() -> new FarmNotFoundException(publicFarmId));
+        Farm farm = farmRepository.findByPublicId(farmPublicId)
+                .orElseThrow(() -> new FarmNotFoundException(farmPublicId));
 
         Field field = fieldRepository.findByIdAndFarm(fieldId, farm)
-                .orElseThrow(() -> new FieldNotFoundException(fieldId, publicFarmId));
+                .orElseThrow(() -> new FieldNotFoundException(fieldId, farmPublicId));
 
         fieldRepository.delete(field);
     }

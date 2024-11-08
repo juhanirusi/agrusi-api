@@ -18,6 +18,7 @@ public class AccountPreferences {
     private Long id;
 
     // AccountPreferences is the inverse side, referencing Account
+
     @OneToOne(mappedBy = "accountPreferences") // No FK column here
     private Account account;
 

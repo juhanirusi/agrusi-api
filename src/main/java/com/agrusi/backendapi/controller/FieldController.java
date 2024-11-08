@@ -25,12 +25,12 @@ public class FieldController {
         this.fieldService = fieldService;
     }
 
-    @GetMapping(value = "/{publicFarmId}/fields/{fieldId}")
+    @GetMapping(value = "/{farmPublicId}/fields/{fieldId}")
     public ResponseEntity<?> getField(
-            @PathVariable UUID publicFarmId,
+            @PathVariable UUID farmPublicId,
             @PathVariable Long fieldId
     ) {
-        FieldResponseDto field = fieldService.getFieldByFieldId(publicFarmId, fieldId);
+        FieldResponseDto field = fieldService.getFieldByFieldId(farmPublicId, fieldId);
 
         return ResponseHandler.generateSuccessResponse(
                 HttpStatus.OK,
@@ -39,12 +39,12 @@ public class FieldController {
         );
     }
 
-    @PostMapping(value = "/{publicFarmId}/fields")
+    @PostMapping(value = "/{farmPublicId}/fields")
     public ResponseEntity<?> createField(
-            @PathVariable UUID publicFarmId, @Valid @RequestBody FieldPostDto fieldPostDTO
+            @PathVariable UUID farmPublicId, @Valid @RequestBody FieldPostDto fieldPostDTO
     ) throws FactoryException, TransformException {
 
-        FieldResponseDto field = fieldService.createNewField(publicFarmId, fieldPostDTO);
+        FieldResponseDto field = fieldService.createNewField(farmPublicId, fieldPostDTO);
 
         return ResponseHandler.generateSuccessResponse(
                 HttpStatus.CREATED,
@@ -53,17 +53,15 @@ public class FieldController {
             );
     }
 
-    // TODO --> RESEARCH MORE ABOUT THE "FactoryException" AND "TransformException" EXCEPTIONS !!!
-
-    @PutMapping(value = "/{publicFarmId}/fields/{fieldId}")
+    @PutMapping(value = "/{farmPublicId}/fields/{fieldId}")
     public ResponseEntity<?> updateFieldPut(
-            @PathVariable UUID publicFarmId,
+            @PathVariable UUID farmPublicId,
             @PathVariable Long fieldId,
             @Valid @RequestBody FieldPutDto fieldPutDto
     ) throws FactoryException, TransformException {
 
         FieldResponseDto field = fieldService.updateFieldByFieldIdPut(
-                publicFarmId, fieldId, fieldPutDto
+                farmPublicId, fieldId, fieldPutDto
         );
 
         return ResponseHandler.generateSuccessResponse(
@@ -73,11 +71,11 @@ public class FieldController {
         );
     }
 
-    @DeleteMapping(value = "/{publicFarmId}/fields/{fieldId}")
+    @DeleteMapping(value = "/{farmPublicId}/fields/{fieldId}")
     public ResponseEntity<?> deleteField(
-            @PathVariable UUID publicFarmId, @PathVariable Long fieldId
+            @PathVariable UUID farmPublicId, @PathVariable Long fieldId
     ) {
-        fieldService.deleteFieldById(publicFarmId, fieldId);
+        fieldService.deleteFieldById(farmPublicId, fieldId);
 
         return ResponseHandler.generateSuccessResponse(
                 HttpStatus.OK,

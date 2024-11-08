@@ -72,11 +72,13 @@ public class Account {
     private Set<Role> authorities = new HashSet<>();
 
     // Account owns the relationship
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_profile_id", referencedColumnName = "id") // FK in Account
     private UserProfile userProfile;
 
     // Account owns the relationship
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_preferences_id", referencedColumnName = "id") // FK in Account
     private AccountPreferences accountPreferences;

@@ -8,19 +8,11 @@ import java.util.UUID;
 
 public interface AccountService {
 
-    AccountFullResponseDto getAccountByPublicId(UUID publicId);
+    AccountFullResponseDto getAccountByPublicId(UUID accountPublicId);
 
     AccountBasicResponseDto updateAccountBasicInfoByPublicIdPatch(
-            UUID publicId, AccountPatchGeneralDto updateDto
+            UUID accountPublicId, AccountPatchGeneralDto updateDto
     );
 
-    void deleteAccountByPublicId(UUID publicId);
-
-    // Account Preferences
-
-//    AccountPreferencesResponseDto getAccountPreferencesByAccountPublicId(UUID publicId);
-//
-//    AccountPreferencesResponseDto updateAccountPreferencesByAccountPublicIdPatch(
-//            UUID publicId, AccountPreferencesPatchDto accountPreferencesPatchDto
-//    );
+    void deleteAccountByPublicId(UUID accountPublicId);
 }

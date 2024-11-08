@@ -1,5 +1,6 @@
 package com.agrusi.backendapi.security;
 
+import com.agrusi.backendapi.security.service.AuthUserDetailsService;
 import com.agrusi.backendapi.security.service.EmailPasswordAuthProvider;
 import com.agrusi.backendapi.security.utils.RSAKeyProperties;
 import com.nimbusds.jose.jwk.JWK;
@@ -13,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -44,7 +44,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(
             HttpSecurity http,
             EmailPasswordAuthProvider emailPasswordAuthProvider,
-            UserDetailsService userDetailsService
+            AuthUserDetailsService userDetailsService
     ) throws Exception {
 
         AuthenticationManagerBuilder authenticationManagerBuilder =

@@ -4,6 +4,7 @@ import com.agrusi.backendapi.UnitTest;
 import com.agrusi.backendapi.dto.request.auth.RegisterDto;
 import com.agrusi.backendapi.dto.response.auth.AccountRegistrationResponseDto;
 import com.agrusi.backendapi.enums.EAccountRole;
+import com.agrusi.backendapi.enums.EAreaUnit;
 import com.agrusi.backendapi.exception.auth.AccountWithEmailAlreadyExistException;
 import com.agrusi.backendapi.mapper.AccountMapper;
 import com.agrusi.backendapi.model.Account;
@@ -56,24 +57,37 @@ public class AuthServiceImplUnitTest {
     private Role userRole;
 
     private RegisterDto registerDto;
-    private AccountRegistrationResponseDto registrationResponseDto;
+
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String password;
+    private String languageCode;
+    private String currencyCode;
+    private String timeZone;
+    private EAreaUnit areaUnit;
 
     @BeforeEach
     public void setUp() {
 
-        registerDto = new RegisterDto(
-                "Jack",
-                "Farmer",
-                "jack.farmer@example.com",
-                "password123"
-        );
+        firstName = "Jack";
+        lastName = "Farmer";
+        email = "jack.farmer@example.com";
+        password = "StrongPassword123@";
+        languageCode = "fi";
+        currencyCode = "EUR";
+        timeZone = "Europe/Helsinki";
+        areaUnit = EAreaUnit.HECTARE;
 
-        registrationResponseDto = new AccountRegistrationResponseDto(
-                UUID.randomUUID(),
-                "jack.farmer@example.com",
-                "Jack",
-                "Farmer",
-                false
+        registerDto = new RegisterDto(
+                firstName,
+                lastName,
+                email,
+                password,
+                languageCode,
+                currencyCode,
+                timeZone,
+                areaUnit.getUnitOfArea()
         );
 
         userRole = new Role(EAccountRole.USER);
@@ -83,6 +97,14 @@ public class AuthServiceImplUnitTest {
     @Test
     @DisplayName("Register a new user account.")
     public void testRegisterNewAccount() {
+
+        AccountRegistrationResponseDto registrationResponseDto = new AccountRegistrationResponseDto(
+                UUID.randomUUID(),
+                email,
+                firstName,
+                lastName,
+                false
+        );
 
         when(accountRepository.existsByEmail(anyString())).thenReturn(false);
         when(roleRepository.findByAuthority(any(EAccountRole.class))).thenReturn(Optional.of(userRole));

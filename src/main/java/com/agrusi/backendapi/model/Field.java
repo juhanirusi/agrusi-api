@@ -1,12 +1,12 @@
 package com.agrusi.backendapi.model;
 
+import com.agrusi.backendapi.enums.ESoilType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 
 @Entity(name = "field")
@@ -39,6 +39,10 @@ public class Field {
 
     @Column(name = "size")
     private BigDecimal size;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "soil_type") // Nullable by default if farmer doesn't want to input it !!!
+    private ESoilType soilType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_farm_id")
@@ -99,20 +103,20 @@ public class Field {
         this.center = center;
     }
 
-    /*
-    * CURRENTLY, WE WANT TO RETURN THE FIELD SIZE IN HECTARES, BECAUSE WE'RE
-    * OFFERING THIS SERVICE TO CUSTOMER'S IN EUROPE ONLY, BUT IF HAVING
-    * CUSTOMER'S FROM THE UNITED STATES OR COUNTRIES USING THE IMPERIAL
-    * SYSTEM, SOME FUNCTIONALITIES NEED TO BE RECODED.
-    */
-
     public BigDecimal getSize() {
-//        return size.divide(BigDecimal.valueOf(10_000), 2, RoundingMode.HALF_UP);
         return size;
     }
 
     public void setSize(BigDecimal size) {
         this.size = size;
+    }
+
+    public ESoilType getSoilType() {
+        return soilType;
+    }
+
+    public void setSoilType(ESoilType soilType) {
+        this.soilType = soilType;
     }
 
     public Farm getFarm() {
@@ -121,19 +125,6 @@ public class Field {
 
     public void setFarm(Farm farm) {
         this.farm = farm;
-    }
-
-    /*
-    * Our area size converters that are means to convert the area saved in
-    * the "size" column from square meters into either hectares or acres.
-    */
-
-    public BigDecimal getAreaSizeInHectares() {
-        return size.divide(BigDecimal.valueOf(10_000), 2, RoundingMode.HALF_UP);
-    }
-
-    public BigDecimal getAreaSizeInAcres() {
-        return size.divide(BigDecimal.valueOf(4_046.85642), 2, RoundingMode.HALF_UP);
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.agrusi.backendapi.controller.FieldController;
 import com.agrusi.backendapi.dto.request.field.FieldPostDto;
 import com.agrusi.backendapi.dto.request.field.FieldPutDto;
 import com.agrusi.backendapi.dto.response.field.FieldResponseDto;
-import com.agrusi.backendapi.dto.response.field.SizeMap;
+import com.agrusi.backendapi.dto.response.SizeMap;
 import com.agrusi.backendapi.exception.farm.FarmNotFoundException;
 import com.agrusi.backendapi.exception.field.FieldNotFoundException;
 import com.agrusi.backendapi.service.FieldService;
@@ -77,6 +77,7 @@ public class FieldControllerUnitTest {
         nonExistentFieldId = 2L;
 
         fieldResponseDto = new FieldResponseDto(
+                1L,
                 "Farm field",
                 List.of(
                         List.of(
@@ -105,6 +106,7 @@ public class FieldControllerUnitTest {
         );
 
         expectedCreateFieldResponseDto = new FieldResponseDto(
+                1L,
                 "New farm field",
                 List.of(
                         List.of(
@@ -134,6 +136,7 @@ public class FieldControllerUnitTest {
         );
 
         expectedUpdateFieldPutResponseDto = new FieldResponseDto(
+                1L,
                 "Updated farm field",
                 List.of(
                         List.of(

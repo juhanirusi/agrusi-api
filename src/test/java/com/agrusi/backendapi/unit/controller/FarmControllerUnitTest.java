@@ -4,7 +4,10 @@ import com.agrusi.backendapi.UnitTest;
 import com.agrusi.backendapi.controller.FarmController;
 import com.agrusi.backendapi.dto.request.farm.FarmPatchDto;
 import com.agrusi.backendapi.dto.request.farm.FarmPostDto;
+import com.agrusi.backendapi.dto.response.SizeMap;
 import com.agrusi.backendapi.dto.response.farm.FarmResponseDto;
+import com.agrusi.backendapi.dto.response.farm.TotalFarmLandAreaResponseDto;
+import com.agrusi.backendapi.enums.EAreaUnit;
 import com.agrusi.backendapi.exception.farm.FarmNotFoundException;
 import com.agrusi.backendapi.service.FarmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -118,6 +122,33 @@ public class FarmControllerUnitTest {
                 .andExpect(jsonPath("$.errors[0].message").value(
                         "Farm with public ID '" + nonExistentPublicId + "' not found."
                 ));
+    }
+    
+    @Test
+    @DisplayName("Get a farm's total land area.")
+    public void testGetFarmTotalLandArea() throws Exception {
+
+        TotalFarmLandAreaResponseDto expectedResponse = new TotalFarmLandAreaResponseDto(
+                publicId,
+                "Jack's Farm",
+                new SizeMap(
+                        BigDecimal.valueOf(10.00),
+                        EAreaUnit.HECTARE.getUnitOfArea()
+                )
+        );
+
+        when(farmService.getTotalLandAreaByFarmPublicId(publicId)).thenReturn(
+                expectedResponse
+        );
+
+        mockMvc.perform(get("/api/v1/farms/{publicFarmId}/total-land-area", publicId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.message").value("Farm's total land area details fetched successfully."))
+                .andExpect(jsonPath("$.data.publicId").value(publicId.toString()))
+                .andExpect(jsonPath("$.data.name").value("Jack's Farm"))
+                .andExpect(jsonPath("$.data.size.value").value(10.0))
+                .andExpect(jsonPath("$.data.size.unitOfArea").value("hectare"));
     }
 
     @Test

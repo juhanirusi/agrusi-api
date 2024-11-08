@@ -3,11 +3,17 @@ package com.agrusi.backendapi.unit.service;
 import com.agrusi.backendapi.UnitTest;
 import com.agrusi.backendapi.dto.request.farm.FarmPatchDto;
 import com.agrusi.backendapi.dto.request.farm.FarmPostDto;
+import com.agrusi.backendapi.dto.response.SizeMap;
 import com.agrusi.backendapi.dto.response.farm.FarmResponseDto;
+import com.agrusi.backendapi.dto.response.farm.TotalFarmLandAreaResponseDto;
+import com.agrusi.backendapi.enums.EAreaUnit;
 import com.agrusi.backendapi.exception.farm.FarmNotFoundException;
 import com.agrusi.backendapi.mapper.FarmMapper;
+import com.agrusi.backendapi.model.AccountPreferences;
 import com.agrusi.backendapi.model.Farm;
 import com.agrusi.backendapi.repository.FarmRepository;
+import com.agrusi.backendapi.service.conversion.UnitConversionService;
+import com.agrusi.backendapi.service.impl.AccountPreferencesServiceImpl;
 import com.agrusi.backendapi.service.impl.FarmServiceImpl;
 import com.agrusi.backendapi.unit.util.ReflectionTestUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,11 +48,19 @@ public class FarmServiceImplUnitTest {
     @Mock
     private FarmMapper farmMapper;
 
+    @Mock
+    private AccountPreferencesServiceImpl accountPreferencesService;
+
+    @Mock
+    private UnitConversionService unitConversionService;
+
     @InjectMocks
     private FarmServiceImpl farmService;
 
     private UUID publicId;
     private Farm farm;
+
+    private AccountPreferences accountPreferences;
 
     private FarmPostDto farmPostDto;
     private FarmPatchDto farmPatchDto;
@@ -57,6 +72,9 @@ public class FarmServiceImplUnitTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
 
         publicId = UUID.randomUUID();
+
+        accountPreferences = new AccountPreferences();
+        accountPreferences.setFieldAreaUnit(EAreaUnit.HECTARE);
 
         ReflectionTestUtils reflectionTestUtils = new ReflectionTestUtils();
 
@@ -117,6 +135,39 @@ public class FarmServiceImplUnitTest {
 
         assertNotNull(responseDto);
         assertEquals(expectedFarmResponseDto, responseDto);
+    }
+
+    @Test
+    @DisplayName("Get a farm's total land area size by public ID.")
+    public void testGetTotalLandAreaByFarmPublicId() {
+
+        BigDecimal totalLandArea = BigDecimal.valueOf(100);
+
+        TotalFarmLandAreaResponseDto expectedResponseDto = new TotalFarmLandAreaResponseDto(
+                UUID.randomUUID(),
+                "Farm name",
+                new SizeMap(totalLandArea, "hectare")
+        );
+
+        when(farmRepository.findByPublicId(publicId)).thenReturn(Optional.of(farm));
+        when(accountPreferencesService.getCurrentAuthenticatedUserPreferences()).thenReturn(accountPreferences);
+        when(farmRepository.calculateTotalLandAreaOfAllFields(farm.getId())).thenReturn(totalLandArea);
+        when(farmMapper.toFarmTotalLandAreaDto(
+                farm, totalLandArea, accountPreferences.getFieldAreaUnit(), unitConversionService)
+        ).thenReturn(expectedResponseDto);
+
+        TotalFarmLandAreaResponseDto responseDto =
+                farmService.getTotalLandAreaByFarmPublicId(publicId);
+
+        assertNotNull(responseDto);
+        assertEquals(expectedResponseDto, responseDto);
+
+        verify(farmRepository).findByPublicId(publicId);
+        verify(farmRepository).calculateTotalLandAreaOfAllFields(farm.getId());
+        verify(accountPreferencesService).getCurrentAuthenticatedUserPreferences();
+        verify(farmMapper).toFarmTotalLandAreaDto(
+                farm, totalLandArea, EAreaUnit.HECTARE, unitConversionService
+        );
     }
 
     @Test

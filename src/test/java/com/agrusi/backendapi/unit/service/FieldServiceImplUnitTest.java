@@ -4,15 +4,18 @@ import com.agrusi.backendapi.UnitTest;
 import com.agrusi.backendapi.dto.request.field.FieldPostDto;
 import com.agrusi.backendapi.dto.request.field.FieldPutDto;
 import com.agrusi.backendapi.dto.response.field.FieldResponseDto;
-import com.agrusi.backendapi.dto.response.field.SizeMap;
+import com.agrusi.backendapi.dto.response.SizeMap;
 import com.agrusi.backendapi.enums.EAreaUnit;
 import com.agrusi.backendapi.exception.farm.FarmNotFoundException;
 import com.agrusi.backendapi.exception.field.FieldNotFoundException;
 import com.agrusi.backendapi.mapper.FieldMapper;
+import com.agrusi.backendapi.model.AccountPreferences;
 import com.agrusi.backendapi.model.Farm;
 import com.agrusi.backendapi.model.Field;
 import com.agrusi.backendapi.repository.FarmRepository;
 import com.agrusi.backendapi.repository.FieldRepository;
+import com.agrusi.backendapi.service.conversion.UnitConversionService;
+import com.agrusi.backendapi.service.impl.AccountPreferencesServiceImpl;
 import com.agrusi.backendapi.service.impl.FieldServiceImpl;
 import com.agrusi.backendapi.unit.util.ReflectionTestUtils;
 import org.geotools.api.referencing.FactoryException;
@@ -50,10 +53,18 @@ public class FieldServiceImplUnitTest {
     @Mock
     private FieldMapper fieldMapper;
 
+    @Mock
+    private AccountPreferencesServiceImpl accountPreferencesService;
+
+    @Mock
+    private UnitConversionService unitConversionService;
+
     @InjectMocks
     private FieldServiceImpl fieldService;
 
     private UUID publicFarmId;
+
+    private AccountPreferences accountPreferences;
     private Farm farm;
 
     private Long fieldId;
@@ -69,6 +80,9 @@ public class FieldServiceImplUnitTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
 
         ReflectionTestUtils reflectionTestUtils = new ReflectionTestUtils();
+
+        accountPreferences = new AccountPreferences();
+        accountPreferences.setFieldAreaUnit(EAreaUnit.HECTARE);
 
         publicFarmId = UUID.randomUUID();
         fieldId = 1L;
@@ -105,6 +119,7 @@ public class FieldServiceImplUnitTest {
         fieldCoordinates.add(outerBoundary);
 
         expectedFieldResponseDto = new FieldResponseDto(
+                1L,
                 "Farm field",
                 fieldCoordinates,
                 Arrays.asList(-104.99404, 39.75621),
@@ -112,6 +127,7 @@ public class FieldServiceImplUnitTest {
         );
 
         expectedFieldPutUpdateResponseDto = new FieldResponseDto(
+                1L,
                 "Updated farm field",
                 fieldCoordinates,
                 Arrays.asList(-104.99404, 39.75621),
@@ -127,9 +143,12 @@ public class FieldServiceImplUnitTest {
 
         when(farmRepository.findByPublicId(publicFarmId)).thenReturn(Optional.of(farm));
 
+        when(accountPreferencesService.getCurrentAuthenticatedUserPreferences()).thenReturn(accountPreferences);
+
         when(fieldMapper.toFieldResponseDto(
                 any(Field.class),
-                eq(EAreaUnit.HECTARE)
+                eq(EAreaUnit.HECTARE),
+                eq(unitConversionService)
         )).thenReturn(expectedFieldResponseDto);
 
         FieldResponseDto responseDto = fieldService.createNewField(publicFarmId, fieldPostDto);
@@ -139,7 +158,7 @@ public class FieldServiceImplUnitTest {
 
         verify(farmRepository).findByPublicId(publicFarmId);
         verify(fieldRepository).save(any(Field.class));
-        verify(fieldMapper).toFieldResponseDto(any(Field.class), eq(EAreaUnit.HECTARE));
+        verify(fieldMapper).toFieldResponseDto(any(Field.class), eq(EAreaUnit.HECTARE), eq(unitConversionService));
     }
 
     @Test
@@ -148,7 +167,10 @@ public class FieldServiceImplUnitTest {
 
         when(farmRepository.findByPublicId(publicFarmId)).thenReturn(Optional.of(farm));
         when(fieldRepository.findByIdAndFarm(fieldId, farm)).thenReturn(Optional.of(field));
-        when(fieldMapper.toFieldResponseDto(field, EAreaUnit.HECTARE)).thenReturn(expectedFieldResponseDto);
+
+        when(accountPreferencesService.getCurrentAuthenticatedUserPreferences()).thenReturn(accountPreferences);
+
+        when(fieldMapper.toFieldResponseDto(field, accountPreferences.getFieldAreaUnit(), unitConversionService)).thenReturn(expectedFieldResponseDto);
 
         FieldResponseDto responseDto = fieldService.getFieldByFieldId(publicFarmId, fieldId);
 
@@ -157,7 +179,7 @@ public class FieldServiceImplUnitTest {
 
         verify(farmRepository).findByPublicId(publicFarmId);
         verify(fieldRepository).findByIdAndFarm(fieldId, farm);
-        verify(fieldMapper).toFieldResponseDto(field, EAreaUnit.HECTARE);
+        verify(fieldMapper).toFieldResponseDto(field, EAreaUnit.HECTARE, unitConversionService);
     }
 
     @Test
@@ -198,7 +220,8 @@ public class FieldServiceImplUnitTest {
 
         when(farmRepository.findByPublicId(publicFarmId)).thenReturn(Optional.of(farm));
         when(fieldRepository.findByIdAndFarm(fieldId, farm)).thenReturn(Optional.of(field));
-        when(fieldMapper.toFieldResponseDto(any(Field.class), eq(EAreaUnit.HECTARE)))
+        when(accountPreferencesService.getCurrentAuthenticatedUserPreferences()).thenReturn(accountPreferences);
+        when(fieldMapper.toFieldResponseDto(any(Field.class), eq(EAreaUnit.HECTARE), eq(unitConversionService)))
                 .thenReturn(expectedFieldPutUpdateResponseDto);
 
         FieldResponseDto responseDto = fieldService.updateFieldByFieldIdPut(
@@ -211,7 +234,7 @@ public class FieldServiceImplUnitTest {
         verify(farmRepository).findByPublicId(publicFarmId);
         verify(fieldRepository).findByIdAndFarm(fieldId, farm);
         verify(fieldRepository).save(field);
-        verify(fieldMapper).toFieldResponseDto(field, EAreaUnit.HECTARE);
+        verify(fieldMapper).toFieldResponseDto(field, EAreaUnit.HECTARE, unitConversionService);
     }
 
     @Test

@@ -25,7 +25,9 @@ public class FarmPatchDto {
         return farmName;
     }
 
+    // Trim the "farmName" if it's NOT null, otherwise leave it null
+
     public void setFarmName(String farmName) {
-        this.farmName = farmName;
+        this.farmName = (farmName != null) ? farmName.trim() : null;
     }
 }

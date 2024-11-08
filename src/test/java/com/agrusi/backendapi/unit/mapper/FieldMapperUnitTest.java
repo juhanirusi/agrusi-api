@@ -1,21 +1,27 @@
 package com.agrusi.backendapi.unit.mapper;
 
 import com.agrusi.backendapi.UnitTest;
-import com.agrusi.backendapi.dto.response.field.SizeMap;
+import com.agrusi.backendapi.dto.response.SizeMap;
 import com.agrusi.backendapi.enums.EAreaUnit;
 import com.agrusi.backendapi.mapper.FieldMapper;
 import com.agrusi.backendapi.model.Field;
+import com.agrusi.backendapi.service.conversion.UnitConversionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.locationtech.jts.geom.*;
 import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @UnitTest
 public class FieldMapperUnitTest {
@@ -23,6 +29,8 @@ public class FieldMapperUnitTest {
     private Field field;
 
     private final FieldMapper fieldMapper = Mappers.getMapper(FieldMapper.class);
+
+    private final UnitConversionService unitConversionService = new UnitConversionService();
 
     @BeforeEach
     public void setUp() {
@@ -67,39 +75,31 @@ public class FieldMapperUnitTest {
         assertEquals(5, result.getFirst().size());  // 5 points in the exterior ring
     }
 
-    @Test
-    @DisplayName("Test getting area size in hectares.")
-    public void testMapSizeHectares() {
+    // Test our field size converters for all field sizes...
 
-        field.setSize(BigDecimal.valueOf(10_000));
+    static Stream<Arguments> conversionData() {
 
-        SizeMap sizeMap = fieldMapper.mapSize(field, EAreaUnit.HECTARE);
-
-        assertEquals("hectare", sizeMap.unitOfArea());
-        assertEquals(BigDecimal.valueOf(1.00).setScale(2, RoundingMode.HALF_UP), sizeMap.value());
+        return Stream.of(
+                arguments(BigDecimal.valueOf(1.00), EAreaUnit.HECTARE, "hectare"),
+                arguments(BigDecimal.valueOf(10000.00), EAreaUnit.SQUARE_METRE, "square metre")
+        );
     }
 
-    @Test
-    @DisplayName("Test getting area size in acres.")
-    public void testMapSizeAcres() {
-
-        field.setSize(BigDecimal.valueOf(10_000));
-
-        SizeMap sizeMap = fieldMapper.mapSize(field, EAreaUnit.ACRE);
-
-        assertEquals("acre", sizeMap.unitOfArea());
-        assertEquals(BigDecimal.valueOf(2.47).setScale(2, RoundingMode.HALF_UP), sizeMap.value());
-    }
-
-    @Test
-    @DisplayName("Test getting area size in square metres.")
-    public void testMapSizeSquareMeters() {
-
+    @ParameterizedTest
+    @MethodSource("conversionData")
+    @DisplayName("Test field size conversion to all area sizes.")
+    public void testConvertAreaSize(
+            BigDecimal expectedValue, EAreaUnit unitOfArea, String unitOfAreaAsString
+    ) {
         field.setSize(BigDecimal.valueOf(10_000).setScale(2, RoundingMode.HALF_UP));
 
-        SizeMap sizeMap = fieldMapper.mapSize(field, EAreaUnit.SQUARE_METER);
+        SizeMap sizeMap = fieldMapper.convertFieldSize(
+                field,
+                unitOfArea,
+                unitConversionService
+        );
 
-        assertEquals("square metre", sizeMap.unitOfArea());
-        assertEquals(BigDecimal.valueOf(10000.00).setScale(2, RoundingMode.HALF_UP), sizeMap.value());
+        assertEquals(unitOfAreaAsString, sizeMap.unitOfArea());
+        assertEquals(expectedValue.setScale(2, RoundingMode.HALF_UP), sizeMap.value());
     }
 }

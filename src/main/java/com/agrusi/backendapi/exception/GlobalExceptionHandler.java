@@ -98,7 +98,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Our ExceptionHandler that will throw all the custom exceptions we've
      * made that extend our "BaseCustomException" abstract class that is
-     * (as the name suggests) a base model for our custom-made exceptions
+     * (as the name suggests) a base model for our custom-made exceptions.
      */
 
     @ExceptionHandler(BaseCustomException.class)

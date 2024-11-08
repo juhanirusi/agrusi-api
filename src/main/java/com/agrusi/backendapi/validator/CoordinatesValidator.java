@@ -8,7 +8,7 @@ import java.util.List;
 
 /*
 * Notice that we're using ".disableDefaultConstraintViolation()" here when we
-* add a new constraint violation. That's because we don't want to also throws
+* add a new constraint violation. That's because we don't want to also throw
 * our default 'Invalid coordinates format.' constraint message.
 */
 

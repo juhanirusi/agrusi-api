@@ -1,9 +1,10 @@
 package com.agrusi.backendapi.mapper;
 
 import com.agrusi.backendapi.dto.response.field.FieldResponseDto;
-import com.agrusi.backendapi.dto.response.field.SizeMap;
+import com.agrusi.backendapi.dto.response.SizeMap;
 import com.agrusi.backendapi.enums.EAreaUnit;
 import com.agrusi.backendapi.model.Field;
+import com.agrusi.backendapi.service.conversion.UnitConversionService;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
@@ -27,8 +28,12 @@ public interface FieldMapper {
 
     @Mapping(source = "area", target = "coordinates", qualifiedByName = "polygonToList")
     @Mapping(source = "center", target = "center", qualifiedByName = "pointToList")
-    @Mapping(target = "size", expression = "java(mapSize(field, areaUnit))")
-    FieldResponseDto toFieldResponseDto(Field field, @Context EAreaUnit areaUnit);
+    @Mapping(target = "size", expression = "java(convertFieldSize(field, areaUnit, unitConversionService))")
+    FieldResponseDto toFieldResponseDto(
+            Field field,
+            @Context EAreaUnit areaUnit,
+            @Context UnitConversionService unitConversionService
+    );
 
     @Named("pointToList")
     default List<Double> pointToList(Point point) {
@@ -71,16 +76,14 @@ public interface FieldMapper {
         return coordinates;
     }
 
-    default SizeMap mapSize(Field field, @Context EAreaUnit areaUnit) {
+    default SizeMap convertFieldSize(
+            Field field,
+            @Context EAreaUnit areaUnit,
+            @Context UnitConversionService unitConversionService
+    ) {
+        BigDecimal convertedSize =
+                unitConversionService.convertFieldAreaSize(field.getSize(), areaUnit);
 
-        BigDecimal size = switch (areaUnit) {
-
-            case HECTARE -> field.getAreaSizeInHectares();
-            case ACRE -> field.getAreaSizeInAcres();
-            case SQUARE_METER -> field.getSize();
-            default -> throw new IllegalArgumentException("Unsupported area unit: " + areaUnit);
-        };
-
-        return new SizeMap(size, areaUnit.getUnitOfArea());
+        return new SizeMap(convertedSize, areaUnit.getUnitOfArea());
     }
 }

@@ -1,4 +1,4 @@
-package com.agrusi.backendapi.dto.response.field;
+package com.agrusi.backendapi.dto.response;
 
 import java.math.BigDecimal;
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +26,7 @@ public class TokenService {
     }
 
     public String generateJwt(Authentication authentication) {
+
         Instant now = Instant.now();
         Instant expirationTime = now.plus(5, ChronoUnit.SECONDS);
 
@@ -32,12 +34,15 @@ public class TokenService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
 
+        UUID accountPublicId = ((AuthUserDetails) authentication.getPrincipal()).getPublicId();
+
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer(AppConstants.AGRUSI_URL) // Who issued this token (WE)
                 .issuedAt(now) // When token was issued
                 .expiresAt(expirationTime) // When token expires
                 .subject(authentication.getName()) // Who this token was issued to
-                .claim("roles", scope) // What information this is holding (roles of the authenticated user)
+                .claim("roles", scope) // Roles of the authenticated user
+                .claim("accountPublicId", accountPublicId)
                 .build();
 
         // Lastly, encode the new generated token from the claims we

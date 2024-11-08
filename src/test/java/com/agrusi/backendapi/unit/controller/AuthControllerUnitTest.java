@@ -4,6 +4,7 @@ import com.agrusi.backendapi.UnitTest;
 import com.agrusi.backendapi.controller.AuthController;
 import com.agrusi.backendapi.dto.request.auth.RegisterDto;
 import com.agrusi.backendapi.dto.response.auth.AccountRegistrationResponseDto;
+import com.agrusi.backendapi.enums.EAreaUnit;
 import com.agrusi.backendapi.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,28 +50,48 @@ public class AuthControllerUnitTest {
 
     private UUID publicId;
 
-    private RegisterDto registerDto;
-    private RegisterDto invalidRegisterDto;
     private AccountRegistrationResponseDto accountRegistrationResponseDto;
+
+    private String validFirstName;
+    private String validLastName;
+    private String validEmail;
+    private String validPassword;
+    private String validLanguageCode;
+    private String validCurrencyCode;
+    private String validTimeZone;
+    private EAreaUnit validAreaUnit;
+
+    private String invalidFirstName;
+    private String invalidLastName;
+    private String invalidEmail;
+    private String invalidPassword;
+    private String invalidLanguageCode;
+    private String invalidCurrencyCode;
+    private String invalidTimeZone;
+    private String invalidAreaUnit;
 
     @BeforeEach
     public void setUp() {
 
         publicId = UUID.randomUUID();
 
-        registerDto = new RegisterDto(
-                "Jack",
-                "Farmer",
-                "jack.farmer@example.com",
-                "Password123"
-        );
+        validFirstName = "Jack";
+        validLastName = "Farmer";
+        validEmail = "jack.farmer@example.com";
+        validPassword = "StrongPassword123@";
+        validLanguageCode = "fi";
+        validCurrencyCode = "EUR";
+        validTimeZone = "Europe/Helsinki";
+        validAreaUnit = EAreaUnit.HECTARE;
 
-        invalidRegisterDto = new RegisterDto(
-                "J",
-                "F",
-                "jack.farmerexample.com",
-                "pass"
-        );
+        invalidFirstName = "J";
+        invalidLastName = "F";
+        invalidEmail = "jack.farmerexample.com";
+        invalidPassword = "pass";
+        invalidLanguageCode = "fiiiiiiii";
+        invalidCurrencyCode = "EUR0";
+        invalidTimeZone = "Euroe/Hesinki";
+        invalidAreaUnit = "metric";
 
         accountRegistrationResponseDto = new AccountRegistrationResponseDto(
                 publicId,
@@ -85,6 +106,17 @@ public class AuthControllerUnitTest {
     @DisplayName("Register a new account.")
     public void testRegisterAccount() throws Exception {
 
+        RegisterDto registerDto = new RegisterDto(
+                validFirstName,
+                validLastName,
+                validEmail,
+                validPassword,
+                validLanguageCode,
+                validCurrencyCode,
+                validTimeZone,
+                validAreaUnit.getUnitOfArea()
+        );
+
         when(authService.registerNewAccount(any(RegisterDto.class))).thenReturn(
                 accountRegistrationResponseDto
         );
@@ -96,15 +128,26 @@ public class AuthControllerUnitTest {
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").value("Account created successfully."))
                 .andExpect(jsonPath("$.data.publicId").value(publicId.toString()))
-                .andExpect(jsonPath("$.data.email").value("jack.farmer@example.com"))
-                .andExpect(jsonPath("$.data.firstName").value("Jack"))
-                .andExpect(jsonPath("$.data.lastName").value("Farmer"))
-                .andExpect(jsonPath("$.data.accountVerified").value(false));
+                .andExpect(jsonPath("$.data.email").value(validEmail))
+                .andExpect(jsonPath("$.data.firstName").value(validFirstName))
+                .andExpect(jsonPath("$.data.lastName").value(validLastName))
+                .andExpect(jsonPath("$.data.emailVerified").value(false));
     }
 
     @Test
     @DisplayName("Try registering a new account with INVALID data.")
     public void testRegisterAccountValidationError() throws Exception {
+
+        RegisterDto invalidRegisterDto = new RegisterDto(
+                invalidFirstName,
+                invalidLastName,
+                invalidEmail,
+                invalidPassword,
+                invalidLanguageCode,
+                invalidCurrencyCode,
+                invalidTimeZone,
+                invalidAreaUnit
+        );
 
         // No need to use "when", because this test is designed to check the
         // controller's behavior when invalid data is provided.
@@ -117,13 +160,17 @@ public class AuthControllerUnitTest {
                 .andExpect(jsonPath("$.message").value("Validation failed"))
                 .andExpect(jsonPath("$.errors").isArray())
 
-                // Should contain validation errors for all fields, because the names
-                // are too short, email isn't valid and the password isn't valid...
+                // Should contain validation errors for all fields,
+                // because every field is invalid...
 
                 .andExpect(jsonPath("$.errors[0].field").exists())
                 .andExpect(jsonPath("$.errors[1].field").exists())
                 .andExpect(jsonPath("$.errors[2].field").exists())
-                .andExpect(jsonPath("$.errors[3].field").exists());
+                .andExpect(jsonPath("$.errors[3].field").exists())
+                .andExpect(jsonPath("$.errors[4].field").exists())
+                .andExpect(jsonPath("$.errors[5].field").exists())
+                .andExpect(jsonPath("$.errors[6].field").exists())
+                .andExpect(jsonPath("$.errors[7].field").exists());
 
         verify(authService, never()).registerNewAccount(any(RegisterDto.class));
     }

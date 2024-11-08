@@ -15,14 +15,4 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findAccountByPublicId(UUID accountPublicId);
 
     Boolean existsByEmail(String email);
-
-    /*
-    * Optional<MyEntity> findById(Long id);
-    *
-    * List<MyEntity> findByName(String name);
-    *
-    * List<MyEntity> findByAgeGreaterThan(int age);
-    *
-    * List<MyEntity> findByStatus(String status);
-    */
 }

@@ -1,9 +1,9 @@
 package com.agrusi.backendapi.enums;
 
 public enum EAreaUnit {
+
     HECTARE("hectare"),
-    SQUARE_METER("square metre"),
-    ACRE("acre");
+    SQUARE_METRE("square metre");
 
     private final String unitOfArea;
 
